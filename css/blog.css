@@ -14,7 +14,10 @@ div#app {
 
 .side-nav {
     min-width: 260px;
+    max-width: 400px;
     border-right: 2px solid silver;
+    box-shadow: 6px 0 6px rgba(0,0,0,.1);
+
 }
 
 main#post {
