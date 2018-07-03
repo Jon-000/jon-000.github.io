@@ -7,20 +7,20 @@
     <title>Jon's blog</title>
     <link rel="stylesheet" href="./css/reset.css">
     <link rel="stylesheet" href="./css/normalize.css">
+    <link rel="stylesheet" href="./css/blog.css">
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-    <h1>闲杂碎语</h1>
-    <div id="app"></div>
-    <ul id="posts">
-        <li><a href="./posts/20180628-开篇.md">开篇</a></li>
-        <li><a href="./posts/20180628-关于promise执行顺序的一例.md">20180628-关于promise执行顺序的一例</a></li>
-        <li><a href="./posts/">posts</a></li>
-    </ul>
-    <main id="post">
-
-    </main>
+    <div id="app">
+        <h1>闲杂碎语</h1>
+        <ul id="posts">
+            <li><a href="./posts/20180628-开篇.md">开篇</a></li>
+            <li><a href="./posts/20180628-关于promise执行顺序的一例.md">20180628-关于promise执行顺序的一例</a></li>
+            <li><a href="./posts/">posts</a></li>
+        </ul>
+        <main id="post"></main>
+    </div>
     <script>
         const isLoading = true;
         const appEle = document.getElementById('app');
@@ -38,9 +38,10 @@
                     console.log(res)
                     const data = res.data;
                     const parsedmd = marked(data);
-                    const newDiv = document.createElement('div');
-                    newDiv.innerHTML = parsedmd;
-                    post.appendChild(newDiv)
+                    // const newDiv = document.createElement('div');
+                    // newDiv.innerHTML = parsedmd;
+                    // post.appendChild(newDiv)
+                    post.innerHTML = parsedmd;
 
                 }).catch(function(error){
                     console.log(error)
