@@ -39,8 +39,7 @@
                     const data = res.data;
                     const parsedmd = marked(data);
                     const newDiv = document.createElement('div');
-                    const newContent = document.createTextNode(parsedmd);
-                    newDiv.appendChild(newContent);
+                    newDiv.innerHTML = parsedmd;
                     post.appendChild(newDiv)
 
                 }).catch(function(error){
