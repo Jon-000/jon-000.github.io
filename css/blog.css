@@ -10,17 +10,21 @@ div#app {
     height: 3rem;
     line-height: 3rem;
     font-size: 1.5rem;
+    background-color: #1976d2;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,.3);
 }
 
 .side-nav {
     min-width: 260px;
-    max-width: 400px;
+    max-width: 360px;
+    height: 100%;
     border-right: 2px solid silver;
     box-shadow: 6px 0 6px rgba(0,0,0,.1);
 
 }
 
 main#post {
+    max-width: 960px;
     padding: 0 20px;
     font-size: 1.3rem;
     line-height: 2rem;
