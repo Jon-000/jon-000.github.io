@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Jon's blog</title>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="./css/reset.css">
     <link rel="stylesheet" href="./css/normalize.css">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <h1>闲杂碎语</h1>
@@ -17,10 +18,14 @@
         <li><a href="./posts/20180628-关于promise执行顺序的一例.md">20180628-关于promise执行顺序的一例</a></li>
         <li><a href="./posts/">posts</a></li>
     </ul>
+    <main id="post">
+
+    </main>
     <script>
         const isLoading = true;
         const appEle = document.getElementById('app');
-        const posts = document.getElementById('posts')
+        const posts = document.getElementById('posts');
+        const post = document.getElementById('post');
         const postLink = document.querySelectorAll('#posts > li > a')
         console.log(postLink)
         postLink.forEach((link) => {
@@ -31,6 +36,13 @@
                 const aHref = e.target.href
                 axios.get(aHref).then(function(res){
                     console.log(res)
+                    const data = res.data;
+                    const parsedmd = marked(data);
+                    const newDiv = document.createElement('div');
+                    const newContent = document.createTextNode(parsedmd);
+                    newDiv.appendChild(newContent);
+                    post.appendChild(newDiv)
+
                 }).catch(function(error){
                     console.log(error)
                 })
