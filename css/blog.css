@@ -17,9 +17,9 @@ main.post {
     line-height: 1.5rem;
 }
 
-main.post > p {
+main.post  p {
     text-align: left;
 }
-main.post > p.author {
+main.post  p.author {
     text-align: center
 }
