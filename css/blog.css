@@ -10,16 +10,16 @@ div#app {
     font-size: 1.5rem;
 }
 
-main.post {
+main#post {
     margin: 0 auto;
     padding: 0 10px;
     font-size: 1.3rem;
     line-height: 1.5rem;
 }
 
-main.post  p {
+main#post  p {
     text-align: left;
 }
-main.post  p.author {
+main#post  p.author {
     text-align: center
 }
