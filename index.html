@@ -65,7 +65,9 @@
         function menuClickHandler() {
             if ( sideNav.style.display === "none" ) {
                 sideNav.style.display = "block";
+                sideNav.style.transform = "translateX(0%)"
             } else {
+                sideNav.style.transform = "translateX(-100%)"
                 sideNav.style.display = "none"
             }
         }
