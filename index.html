@@ -14,7 +14,7 @@
 <body>
     <div id="app">
         <div class="header">
-            <div class="box-shadow-menu"></div>
+            <button class="box-shadow-menu" onclick="menuClickHandler()"></button>
             <h1>闲杂碎语</h1>
         </div>
         <div class="content">
@@ -56,13 +56,12 @@
             })
         })
 
-        const menu = document.querySelector('div.box-shadow-menu')
         const sideNav = document.querySelector('div.side-nav')
-        menu.addEventListener('click', function(){
-            const currentState = sideNav.style.display
-            if (currentState === "none") { sideNav.style.display = "block"}
-            if (currentState === "block") { sideNav.style.display = "none"}
-        })
+
+        function menuClickHandler() {
+            if (sideNav.style.display === 'none') { sideNav.style.display = 'block' }
+            if (sideNav.style.display === 'block') { sideNav.style.display = 'none' }
+        }
     </script>
 </body>
 </html>

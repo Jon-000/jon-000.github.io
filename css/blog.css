@@ -56,6 +56,10 @@ div.header {
     padding: 1rem;
 }
 
+.side-nav-show {
+    display: block;
+}
+
 .side-nav ul li {
     padding: 0.2rem;
 }
