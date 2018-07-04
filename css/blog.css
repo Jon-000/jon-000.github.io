@@ -88,6 +88,5 @@ main.container {
 @media screen and (max-width:850px) {
     .side-nav {
         transform: translateX(-100%);
-        display: none;       
     }
   }
