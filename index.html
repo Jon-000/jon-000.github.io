@@ -14,6 +14,7 @@
 <body>
     <div id="app">
         <div class="header">
+            <div class="box-shadow-menu"></div>
             <h1>闲杂碎语</h1>
         </div>
         <div class="content">
@@ -53,6 +54,14 @@
                     console.log(error)
                 })
             })
+        })
+
+        const menu = document.querySelector('div.box-shadow-menu')
+        const sideNav = document.querySelector('div.side-nav')
+        menu.addEventListener('click', function(){
+            const currentState = sideNav.style.display
+            if (currentState === "none") { sideNav.style.display = "block"}
+            if (currentState === "block") { sideNav.style.display = "none"}
         })
     </script>
 </body>
