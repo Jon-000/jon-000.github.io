@@ -25,7 +25,9 @@
                     <li><a href="./posts/">posts</a></li>
                 </ul>
             </div>
-            <main id="post"></main>
+            <main class="container">
+                <div id="post"></div>
+            </main>
         </div>
     </div>
     <script>
@@ -59,6 +61,7 @@
         const sideNav = document.querySelector('div.side-nav')
 
         function menuClickHandler() {
+            console.log('xxxxx')
             if (sideNav.style.display === 'none') { sideNav.style.display = 'block' }
             if (sideNav.style.display === 'block') { sideNav.style.display = 'none' }
         }

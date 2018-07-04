@@ -50,7 +50,6 @@ div.header {
 .side-nav {
     min-width: 260px;
     max-width: 360px;
-    height: 100%;
     border-right: 2px solid silver;
     box-shadow: 6px 0 6px rgba(0,0,0,.1);
     padding: 1rem;
@@ -73,18 +72,15 @@ div.header {
     text-shadow: 0 0 5px #fff;
 }
 
-main#post {
+main.container {
+    margin: 0 auto;
+}
+
+#post {
     padding: 0 20px;
     font-size: 1.3rem;
     line-height: 2rem;
     max-width: 960px;
-}
-
-main#post  p {
-    text-align: left;
-}
-main#post  p.author {
-    text-align: center
 }
 
 @media screen and (max-width:850px) {
