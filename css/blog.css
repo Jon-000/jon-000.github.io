@@ -12,12 +12,14 @@ div.header {
     display: flex;
     flex-direction: row;
     align-items: center;
+    box-sizing: border-box;
     padding: 0 1.2rem;
 }
 
 .box-shadow-menu {
     position: relative;
     padding-left: 1.25em;
+    height: 1rem;
   }
 .box-shadow-menu:before {
     content: "";
@@ -51,6 +53,20 @@ div.header {
     height: 100%;
     border-right: 2px solid silver;
     box-shadow: 6px 0 6px rgba(0,0,0,.1);
+    padding: 1rem;
+}
+
+.side-nav ul li {
+    padding: 0.2rem;
+}
+
+.side-nav ul li a {
+    text-decoration-line: none;
+}
+
+.side-nav ul li a:hover {
+    background-color: #dbdbdb;
+    text-shadow: 0 0 5px #fff;
 }
 
 main#post {
