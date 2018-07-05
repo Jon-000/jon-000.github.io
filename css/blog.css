@@ -3,6 +3,10 @@ html, body {
     height: 100%;
 }
 
+pre {
+    overflow: auto;
+}
+
 div#app {
     margin: 0 auto;
     width: 100%;
@@ -12,13 +16,14 @@ div#app {
 .header {
     width: 100%;
     height: 3rem;
-    /* background-color: #1976d2; */
+    background-color: #fff;
     box-shadow: 0 2px 5px 0 rgba(0,0,0,.3);
     display: flex;
     flex-direction: row;
     align-items: center;
     box-sizing: border-box;
     position: fixed;
+    z-index: 3;
 }
 
 .box-shadow-menu {
@@ -66,7 +71,7 @@ div#app {
     padding: 1rem;
     min-width: 260px;
     max-width: 360px;
-    border-right: 2px solid silver;
+    /* border-right: 2px solid silver; */
     box-shadow: 6px 0 6px rgba(0,0,0,.1);
     min-height: 100%;
     transition: all 1s ease;
@@ -108,9 +113,16 @@ main.container {
     max-width: 960px;
 }
 
-@media screen and (max-width:850px) {
+@media screen and (max-width:1024px) {
     .side-nav {
         transform: translateX(-100%);
         display: none;
     }
   }
+@media screen and (max-width: 768px) {
+    .side-nav {
+        position: fixed;
+        z-index: 2;
+        background-color: #fff;
+    }
+}
