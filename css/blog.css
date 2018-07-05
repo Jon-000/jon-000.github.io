@@ -13,7 +13,6 @@ div.header {
     flex-direction: row;
     align-items: center;
     box-sizing: border-box;
-    padding: 0 1.2rem;
 }
 
 .box-shadow-menu {

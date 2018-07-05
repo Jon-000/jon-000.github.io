@@ -71,6 +71,11 @@
                 sideNav.style.display = "none"
             }
         }
+
+        // dom加载完成自动点击posts列表的第一个post
+        document.addEventListener('DOMContentLoaded', function(e){
+            document.querySelector('ul#posts li a').dispatchEvent(new Event('click'))
+        })
     </script>
 </body>
 </html>
