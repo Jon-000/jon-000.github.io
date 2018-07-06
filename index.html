@@ -29,6 +29,7 @@
                 </ul>
             </div>
             <div class="content">
+                <div id="content-mask-layer" onclick="closeMenu()"></div>
                 <div id="post"></div>
             </div>
         </main>
@@ -65,11 +66,18 @@
         const content = document.querySelector('.container .content')
         function openMenu() {
             sideNav.style.left = '0px';
-            content.style.paddingLeft = '260px';
+            const mql = window.matchMedia("(max-width: 768px)");
+            if ( mql.matches ) {
+                content.style.paddingLeft = '0px';
+                document.getElementById('content-mask-layer').style.visibility = 'visible';
+            } else {
+                content.style.paddingLeft = '260px';
+            }
         }
         function closeMenu() {
             sideNav.style.left = '-100%';
             content.style.paddingLeft = '0px';
+            document.getElementById('content-mask-layer').style.visibility = 'hidden';            
         }
         function menuClickHandler() {
             if (sideNav.style.left === '0px' ) {
