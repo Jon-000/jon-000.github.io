@@ -19,18 +19,19 @@
             <!-- <label for="menu" class="box-shadow-menu"></label> -->
             <h1>闲杂碎语</h1>
         </div>
-        <div class="content">
+        <main class="container">
             <div class="side-nav">
                 <ul id="posts">
                     <li><a href="./posts/20180628-开篇.md">开篇</a></li>
                     <li><a href="./posts/20180628-关于promise执行顺序的一例.md">20180628-关于promise执行顺序的一例</a></li>
+                    <li><a href="./posts/20180704-关于布局与水平滚动条.md">20180704-关于布局与水平滚动条</a></li>
                     <li><a href="./posts/">posts</a></li>
                 </ul>
             </div>
-            <main class="container">
+            <div class="content">
                 <div id="post"></div>
-            </main>
-        </div>
+            </div>
+        </main>
     </div>
     <script>
         const isLoading = true;
@@ -61,16 +62,23 @@
         })
 
         const sideNav = document.querySelector('div.side-nav')
-
+        const content = document.querySelector('.container .content')
+        function openMenu() {
+            sideNav.style.width = '260px';
+            content.style.marginLeft = '260px';
+        }
+        function closeMenu() {
+            sideNav.style.width = '0';
+            content.style.marginLeft = '0';
+        }
         function menuClickHandler() {
-            if ( sideNav.style.transform === "translateX(-100%)" ) {
-                sideNav.style.display = "block";
-                sideNav.style.transform = "translateX(0%)"
+            if (sideNav.style.width === '0' ) {
+                openMenu();
             } else {
-                sideNav.style.transform = "translateX(-100%)"
-                sideNav.style.display = "none"
+                closeMenu();
             }
         }
+
 
         // dom加载完成自动点击posts列表的第一个post
         document.addEventListener('DOMContentLoaded', function(e){

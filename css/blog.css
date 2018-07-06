@@ -56,7 +56,7 @@ div#app {
     margin: 0;
 }
 
-.content {
+main.container {
     width: 100%;
     min-height: 100%;
     display: flex;
@@ -64,12 +64,14 @@ div#app {
     padding-top: 3rem;
 }
 
+
 .side-nav {
+    position: fixed;
+    width: 260px;
     min-height: 100%;
     padding: 1rem;
-    min-width: 260px;
-    /* border-right: 2px solid silver; */
     box-shadow: 6px 0 6px rgba(0,0,0,.1);
+    background-color: #fff;
     transition: all 1s ease;
 }
 
@@ -97,10 +99,10 @@ div#app {
     text-shadow: 0 0 5px #fff;
 }
 
-main.container {
-    width: 100%;
-    margin: 0 auto;
+.content {
+    margin-left: 260px
 }
+
 
 #post {
     padding: 0 20px;
@@ -111,14 +113,14 @@ main.container {
 
 @media screen and (max-width:1024px) {
     .side-nav {
-        transform: translateX(-100%);
-        display: none;
+        width: 0;
+    }
+    .content {
+        margin-left: 0;
     }
   }
 @media screen and (max-width: 768px) {
     .side-nav {
-        position: fixed;
-        z-index: 2;
-        background-color: #fff;
+        color: red;
     }
 }
