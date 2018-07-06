@@ -113,7 +113,7 @@ main.container {
     position: relative;
 }
 
-.contetn-mask-layer{
+#contetn-mask-layer {
     position: absolute;
     z-index: 55;
     width: 100%;
