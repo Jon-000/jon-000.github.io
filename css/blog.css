@@ -67,6 +67,7 @@ main.container {
 
 .side-nav {
     position: fixed;
+    overflow: hidden;
     width: 260px;
     min-height: 100%;
     /* padding: 1rem; */
@@ -100,7 +101,9 @@ main.container {
 }
 
 .content {
-    margin-left: 260px
+    width: 100%;
+    margin-left: 260px;
+    transition: all 1s ease;
 }
 
 
