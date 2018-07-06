@@ -69,7 +69,7 @@ main.container {
     position: fixed;
     width: 260px;
     min-height: 100%;
-    padding: 1rem;
+    /* padding: 1rem; */
     box-shadow: 6px 0 6px rgba(0,0,0,.1);
     background-color: #fff;
     transition: all 1s ease;
@@ -113,10 +113,10 @@ main.container {
 
 @media screen and (max-width:1024px) {
     .side-nav {
-        width: 0;
+        width: 0px;
     }
     .content {
-        margin-left: 0;
+        margin-left: 0px;
     }
   }
 @media screen and (max-width: 768px) {
