@@ -1,0 +1,1547 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Jon's Blog]]></title><description><![CDATA[杂七杂八的记录]]></description><link>https://wqzhao.github.com/</link><generator>RSS for Node</generator><lastBuildDate>Fri, 08 Feb 2019 10:30:43 GMT</lastBuildDate><item><title><![CDATA[ubuntu 18.04 安装mysql]]></title><description><![CDATA[Ubuntu的apt源中有MySQL，目前是MySQL 5.7 目前从apt安装的mysql版本为:  这样就装上了，但是还需要配置。 shell输入 提示设置Validate Password Plugin…]]></description><link>https://wqzhao.github.com//20181208-install-mysql-on-ubuntu-1604/</link><guid isPermaLink="false">https://wqzhao.github.com//20181208-install-mysql-on-ubuntu-1604/</guid><pubDate>Sat, 08 Dec 2018 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;Ubuntu的apt源中有MySQL，目前是MySQL 5.7&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;shell&quot;&gt;&lt;pre class=&quot;language-shell&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; apt update
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; apt &lt;span class=&quot;token function&quot;&gt;install&lt;/span&gt; mysql-server&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;目前从apt安装的mysql版本为: &lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;forward@forward-Lenovo:~$ mysql --version
+mysql  Ver 14.14 Distrib 5.7.25, &lt;span class=&quot;token keyword&quot;&gt;for&lt;/span&gt; Linux &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;x86_64&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; using  EditLine wrapper&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;这样就装上了，但是还需要配置。&lt;/p&gt;
+&lt;p&gt;shell输入&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;shell&quot;&gt;&lt;pre class=&quot;language-shell&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; mysql_secure_installation&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;提示设置Validate Password Plugin，这一插件是用来检测密码强度的，按&lt;code class=&quot;language-text&quot;&gt;n&lt;/code&gt;不设置。&lt;/p&gt;
+&lt;p&gt;输入两遍密码： &lt;code class=&quot;language-text&quot;&gt;123&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;删除默认自带的anonymous user, 按&lt;code class=&quot;language-text&quot;&gt;y&lt;/code&gt;,生产环境要记着删掉这个user&lt;/p&gt;
+&lt;p&gt;禁用远程登录，只允许’localhost’登录，按&lt;code class=&quot;language-text&quot;&gt;y&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;移除test这个测试数据库和对其的访问权限，按&lt;code class=&quot;language-text&quot;&gt;y&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;重新加载权限表(privilege tables)，按&lt;code class=&quot;language-text&quot;&gt;y&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;done&lt;/p&gt;
+&lt;p&gt;从Debian distribution安装将自动初始化MySQL data directory.&lt;/p&gt;
+&lt;p&gt;不用进行其他配置,MySQL已经在自动运行了.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;shell&quot;&gt;&lt;pre class=&quot;language-shell&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;systemctl status mysql.service&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;输出的信息中可以看到 Active: active(running),说明正在运行.&lt;/p&gt;
+&lt;p&gt;默认情况下，MySQL的root用户的登录是通过&lt;code class=&quot;language-text&quot;&gt;auth_socket&lt;/code&gt;plugin&lt;/p&gt;
+&lt;p&gt;要用密码登录MySQL的root用户，需改变登录方式为&lt;code class=&quot;language-text&quot;&gt;mysql_native_password&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;sudo mysql&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;查看并更改，运行后前面设置的密码将会被改了&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;mysql&quot;&gt;&lt;pre class=&quot;language-mysql&quot;&gt;&lt;code class=&quot;language-mysql&quot;&gt;SELECT user,authentication_string,plugin,host FROM mysql.user;
+
+ALTER USER &amp;#39;root&amp;#39;@&amp;#39;localhost&amp;#39; IDENTIFIED WITH mysql_native_password BY &amp;#39;ps123&amp;#39;;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;让服务器重新加载授权表使之生效&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;mysql&quot;&gt;&lt;pre class=&quot;language-mysql&quot;&gt;&lt;code class=&quot;language-mysql&quot;&gt;FLUSH PRIVILEGES;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;重新运行SELECT命令，查看确认更改生效，&lt;code class=&quot;language-text&quot;&gt;exit&lt;/code&gt;退出。&lt;/p&gt;
+&lt;p&gt;登录,以root身份(-u root),提示输入密码(-p)&lt;/p&gt;
+&lt;p&gt;此种登录方式只有正常权限，管理员权限只局限于数据库&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;shell&quot;&gt;&lt;pre class=&quot;language-shell&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;mysql -u root -p&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;显示此时编码设置&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;mysql&quot;&gt;&lt;pre class=&quot;language-mysql&quot;&gt;&lt;code class=&quot;language-mysql&quot;&gt;mysql&amp;gt; show variables like &amp;#39;%char%&amp;#39;;
++--------------------------------------+----------------------------+
+| Variable_name                        | Value                      |
++--------------------------------------+----------------------------+
+| character_set_client                 | utf8                       |
+| character_set_connection             | utf8                       |
+| character_set_database               | latin1                     |
+| character_set_filesystem             | binary                     |
+| character_set_results                | utf8                       |
+| character_set_server                 | latin1                     |
+| character_set_system                 | utf8                       |
+| character_sets_dir                   | /usr/share/mysql/charsets/ |
+| validate_password_special_char_count | 1                          |
++--------------------------------------+----------------------------+
+9 rows in set (0.00 sec)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;为避免以后可能出现的奇怪问题.将编码全改为utf8&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;shell&quot;&gt;&lt;pre class=&quot;language-shell&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;token function&quot;&gt;cd&lt;/span&gt; /etc/mysql/
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;cp&lt;/span&gt; my.cnf my.cnf.backup // 备份一个
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; vim my.cnf&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;添加&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;[client]
+default-character-set = utf8
+
+[mysqld]
+default-storage-engine = INNODB
+character-set-server = utf8
+collation-server = utf8_general_ci&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;重启MySQL&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;shell&quot;&gt;&lt;pre class=&quot;language-shell&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; systemctl restart mysql.service&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;重新登录并查看编码配置:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;mysql&amp;gt; show variables like &amp;#39;%char%&amp;#39;;
++--------------------------------------+----------------------------+
+| Variable_name                        | Value                      |
++--------------------------------------+----------------------------+
+| character_set_client                 | utf8                       |
+| character_set_connection             | utf8                       |
+| character_set_database               | utf8                       |
+| character_set_filesystem             | binary                     |
+| character_set_results                | utf8                       |
+| character_set_server                 | utf8                       |
+| character_set_system                 | utf8                       |
+| character_sets_dir                   | /usr/share/mysql/charsets/ |
+| validate_password_special_char_count | 1                          |
++--------------------------------------+----------------------------+
+9 rows in set (0.00 sec)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;创建一个新用户&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;mysql&quot;&gt;&lt;pre class=&quot;language-mysql&quot;&gt;&lt;code class=&quot;language-mysql&quot;&gt;CREATE USER &amp;#39;sammy&amp;#39;@&amp;#39;localhost&amp;#39; IDENTIFIED BY &amp;#39;password&amp;#39;;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;授权： 操作数据库中的所有tables，添改删用户&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;mysql&quot;&gt;&lt;pre class=&quot;language-mysql&quot;&gt;&lt;code class=&quot;language-mysql&quot;&gt;GRANT ALL PRIVILEGES ON *.* TO &amp;#39;sammy&amp;#39;@&amp;#39;localhost&amp;#39; WITH GRANT OPTION;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;参考资料:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-18-04&quot;&gt;https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-18-04&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.liaoxuefeng.com/wiki/001434446689867b27157e896e74d51a89c25cc8b43bdb3000/00143450161807565b0c93cb65d4df0a733bf15dc1f8c79000&quot;&gt;https://www.liaoxuefeng.com/wiki/001434446689867b27157e896e74d51a89c25cc8b43bdb3000/00143450161807565b0c93cb65d4df0a733bf15dc1f8c79000&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</content:encoded></item><item><title><![CDATA[promise一例]]></title><description><![CDATA[ handlers are pending execution until the engine is done with the current code. 运行结果]]></description><link>https://wqzhao.github.com//20180628-关于promise执行顺序的一例/</link><guid isPermaLink="false">https://wqzhao.github.com//20180628-关于promise执行顺序的一例/</guid><pubDate>Thu, 28 Jun 2018 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;&lt;code class=&quot;language-text&quot;&gt;.then/catch&lt;/code&gt; handlers are pending execution until the engine is done with the current code.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre style=&quot;counter-reset: linenumber 0&quot; class=&quot;language-javascript line-numbers&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token function-variable function&quot;&gt;executor&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; resolve &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;executor running&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;done&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; promise &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Promise&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;executor&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+promise&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;log&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;code finished&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;span aria-hidden=&quot;true&quot; class=&quot;line-numbers-rows&quot; style=&quot;white-space: normal; width: auto; left: 0;&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;运行结果&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;executor running
+code finished
+done&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content:encoded></item><item><title><![CDATA[mysql添加用户]]></title><description><![CDATA[先以root身份登录mysql mysql is a simple SQL shell with input line editing capabilities.算是个客户端. 给用户授予权限
+this account can access the   database,
+but…]]></description><link>https://wqzhao.github.com//20180412-mysql-add-user/</link><guid isPermaLink="false">https://wqzhao.github.com//20180412-mysql-add-user/</guid><pubDate>Thu, 12 Apr 2018 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;先以root身份登录mysql&lt;/p&gt;
+&lt;p&gt;mysql is a simple SQL shell with input line editing capabilities.算是个客户端.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;shell&quot;&gt;&lt;pre class=&quot;language-shell&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;mysql -u root -p&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;mysql&amp;gt; create database coding666_dev;
+Query OK, 1 row affected (0.07 sec)
+
+mysql&amp;gt; show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| coding666_dev      |
+| mysql              |
+| performance_schema |
+| pets               |
+| sys                |
++--------------------+
+6 rows in set (0.00 sec)
+
+mysql&amp;gt;  CREATE USER &amp;#39;coding666_dever&amp;#39;@&amp;#39;localhost&amp;#39; IDENTIFIED BY &amp;#39;coding666_Dever&amp;#39;;
+Query OK, 0 rows affected (0.18 sec)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;给用户授予权限
+this account can access the &lt;code class=&quot;language-text&quot;&gt;coding666_dev&lt;/code&gt; database,
+but only from the local host.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;mysql&amp;gt; GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP
+    -&amp;gt; ON coding666_dev.*
+    -&amp;gt; TO &amp;#39;coding666_dever&amp;#39;@&amp;#39;localhost&amp;#39;;
+Query OK, 0 rows affected (0.01 sec)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;查看端口号&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;mysql&amp;gt; show global variables like &amp;#39;port&amp;#39;;
++---------------+-------+
+| Variable_name | Value |
++---------------+-------+
+| port          | 3306  |
++---------------+-------+
+1 row in set (0.33 sec)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;配置文件地址&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;~$ ls /etc/mysql/
+conf.d      debian-start  my.cnf.fallback  mysql.conf.d
+debian.cnf  my.cnf        mysql.cnf&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;在&lt;code class=&quot;language-text&quot;&gt;/etc/mysql/my.cnf&lt;/code&gt;中有如下内容&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;# - &amp;quot;/etc/mysql/my.cnf&amp;quot; to set global options,
+# - &amp;quot;~/.my.cnf&amp;quot; to set user-specific options.
+# 
+# One can use all long options that the program supports.
+# Run program with --help to get a list of available options and with
+# --print-defaults to see which it would actually understand and use.
+#
+# For explanations see
+# http://dev.mysql.com/doc/mysql/en/server-system-variables.html
+
+#
+# * IMPORTANT: Additional settings that can override those from this file!
+#   The files must end with &amp;#39;.cnf&amp;#39;, otherwise they&amp;#39;ll be ignored.
+#
+
+!includedir /etc/mysql/conf.d/
+!includedir /etc/mysql/mysql.conf.d/&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;据此,通过&lt;code class=&quot;language-text&quot;&gt;less /etc/mysql/mysql.conf.d/mysqld.cnf&lt;/code&gt;可查看到&lt;code class=&quot;language-text&quot;&gt;port = 3306&lt;/code&gt;.
+注意,此端口是&lt;code class=&quot;language-text&quot;&gt;mysqld&lt;/code&gt;的端口设置.&lt;/p&gt;
+&lt;p&gt;总之,在/etc/mysql/下可以找到很多配置选项.文档[https://dev.mysql.com/doc/refman/5.7/en/option-files.html]&lt;/p&gt;
+&lt;p&gt;例如,若修改&lt;code class=&quot;language-text&quot;&gt;/etc/mysql/my.cnf&lt;/code&gt;默认服务端端口如下:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;[mysqld]
+port = 4444&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;重启服务后sequelize如果还使用最初的3306的话将无法连接,此时我们通过&lt;code class=&quot;language-text&quot;&gt;mysql -u root -p&lt;/code&gt;仍可以登录,然后&lt;code class=&quot;language-text&quot;&gt;show global variables like &amp;#39;port&amp;#39;&lt;/code&gt;可见端口为4444.&lt;/p&gt;
+&lt;p&gt;这里有一点要提下,根据mysql5.7的manuel refrence&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;On Unix, MySQL programs treat the host name localhost specially, in a way that is likely different from what you expect compared to other network-based programs. For connections to localhost, MySQL programs attempt to connect to the local server by using a Unix socket file. This occurs even if a --port or -P option is given to specify a port number. To ensure that the client makes a TCP/IP connection to the local server, use --host or -h to specify a host name value of 127.0.0.1, or the IP address or name of the local server. You can also specify the connection protocol explicitly, even for localhost, by using the --protocol=TCP option. For example:
+
+shell&amp;gt; mysql --host=127.0.0.1
+shell&amp;gt; mysql --protocol=TCP&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;也就是说,在unix下,mysql程序对待&lt;code class=&quot;language-text&quot;&gt;localhost&lt;/code&gt;这个关键词的做法有点独特.一般情况下,&lt;code class=&quot;language-text&quot;&gt;localhost&lt;/code&gt;和&lt;code class=&quot;language-text&quot;&gt;127.0.0.1&lt;/code&gt;似乎是同义词可以互相替换的,但这里不行.&lt;/p&gt;
+&lt;p&gt;如果我们通过&lt;code class=&quot;language-text&quot;&gt;mysql --host=localhost&lt;/code&gt;来连接,我们使用的就不是tcp/ip方式,即使通过&lt;code class=&quot;language-text&quot;&gt;--port&lt;/code&gt;指定接口也没用.要想mysql接入服务端的本地连接采取tcp/ip形式,必须用&lt;code class=&quot;language-text&quot;&gt;--host:127.0.0.1&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;因此,在此时我们服务端端口是4444的情况下,使用以下命令仍能连接&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;shell&quot;&gt;&lt;pre class=&quot;language-shell&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;mysql --host&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;localhost -P 3307 -u root -p
+mysql --host&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;localhost -P 4444 -u root -p&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;因为我们没用tcp/ip连接,指定的&lt;code class=&quot;language-text&quot;&gt;-P&lt;/code&gt;接口压根没用.&lt;/p&gt;
+&lt;p&gt;此时我们若想mysql这个命令行工具连入本地的mysql服务端采用tcp/ip形式,则需明确使用&lt;code class=&quot;language-text&quot;&gt;127.0.0.1&lt;/code&gt;并指明正确的端口号,如下:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;mysql --host=127.0.0.1 -P 4444 -u root -p&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;ok.测试完成,我们将服务端port的默认值还修改回3306并重启服务.&lt;/p&gt;</content:encoded></item><item><title><![CDATA[关于箭头函数中的大小括号与返回值]]></title><description><![CDATA[在node v8.9.4中测试如下: 总结: 小括号自动return,换行到下边写其实还是等于在箭头那行;
+大括号默认不return,需要自己指定return. 以下f5函数用箭头函数写会报错. 箭头后边的小括号大概类似于return…]]></description><link>https://wqzhao.github.com//20180407-es6箭头函数中的小括号与大括号/</link><guid isPermaLink="false">https://wqzhao.github.com//20180407-es6箭头函数中的小括号与大括号/</guid><pubDate>Sat, 07 Apr 2018 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;在node v8.9.4中测试如下:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token function-variable function&quot;&gt;f1&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;x&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; x
+undefined
+&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token function-variable function&quot;&gt;f2&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;x&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt; x
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+undefined
+&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token function-variable function&quot;&gt;f3&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;x&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt; x
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+undefined
+&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token function-variable function&quot;&gt;f4&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;x&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; x
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+undefined&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;x&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;f1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;x&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;f2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;x&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;f3&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;x&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;f4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;x&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+undefined
+&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;haha&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+undefined&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;test2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;x&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt; f1&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;f1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;x&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt; f2&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;f2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;x&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt; f3&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;f3&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;x&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt; f4&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;f4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;x&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+undefined
+&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;test2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;haha&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; f1&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;haha&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; f2&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;haha&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; f3&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; undefined&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; f4&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;haha&apos;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;总结:&lt;/p&gt;
+&lt;p&gt;小括号自动return,换行到下边写其实还是等于在箭头那行;
+大括号默认不return,需要自己指定return.&lt;/p&gt;
+&lt;p&gt;以下f5函数用箭头函数写会报错.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token function-variable function&quot;&gt;f5&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;x&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; i &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt;x&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt; i&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;*&lt;/span&gt;i
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+undefined
+&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;f5&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;haha&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token number&quot;&gt;NaN&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;f5&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token number&quot;&gt;10&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token function-variable function&quot;&gt;f6&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;x&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; i &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt;x&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; i &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt;x&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token operator&quot;&gt;^&lt;/span&gt;
+
+SyntaxError&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Unexpected identifier
+
+&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;箭头后边的小括号大概类似于return,但是显然如下是不能返回值的.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token function-variable function&quot;&gt;f4&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;x&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;x&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+undefined
+&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;f4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+undefined
+&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;但是这样显然是有用的:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;jsx&quot;&gt;&lt;pre class=&quot;language-jsx&quot;&gt;&lt;code class=&quot;language-jsx&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;ReactApp&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;React&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Component&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token function&quot;&gt;render&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+      &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token plain-text&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;h2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token plain-text&quot;&gt;a react app&lt;/span&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;h2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token plain-text&quot;&gt;
+      &lt;/span&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;所以结论大概可以不太准确的描述如下:&lt;/p&gt;
+&lt;p&gt;return后的小括号帮助书写多行的返回值;
+箭头函数中箭头后边的小括号其实就是return后的小括号,只不过return省略了书写.&lt;/p&gt;</content:encoded></item><item><title><![CDATA[CSS animation & Transition]]></title><description><![CDATA[举个栗子 html: css: Result: 太极:]]></description><link>https://wqzhao.github.com//20180321-css-animation/</link><guid isPermaLink="false">https://wqzhao.github.com//20180321-css-animation/</guid><pubDate>Wed, 21 Mar 2018 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;举个栗子&lt;/p&gt;
+&lt;p&gt;html:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;html&quot;&gt;&lt;pre class=&quot;language-html&quot;&gt;&lt;code class=&quot;language-html&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt; &lt;span class=&quot;token attr-name&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;container1&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+  #constainer1
+  &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt; &lt;span class=&quot;token attr-name&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;box1&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+    #box1
+  &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;css:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;css&quot;&gt;&lt;pre class=&quot;language-css&quot;&gt;&lt;code class=&quot;language-css&quot;&gt;&lt;span class=&quot;token selector&quot;&gt;#container1&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;background&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; red&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; 400px&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; 400px&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token selector&quot;&gt;#box1&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;background&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; white&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; 200px&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; 200px&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;animation-name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; animation001&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;animation-duration&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; 3s&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;animation-iteration-count&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; infinite&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token atrule&quot;&gt;&lt;span class=&quot;token rule&quot;&gt;@keyframes&lt;/span&gt; animation001&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token selector&quot;&gt;0%&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; white&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token selector&quot;&gt;25%&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; red&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token selector&quot;&gt;50%&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; green&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token selector&quot;&gt;75%&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; blue&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token selector&quot;&gt;100%&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; white&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Result:&lt;/p&gt;
+&lt;div id=&quot;container1&quot;&gt;
+  #constainer1
+  &lt;div id=&quot;box1&quot;&gt;
+    #box1
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;style&gt;
+#container1 {
+  background: red;
+  width: 400px;
+  height: 400px;
+}
+#box1 {
+    background: white;
+    width: 200px;
+    height: 200px;
+    animation-name: animation001;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+}
+@keyframes animation001 {
+    0% {background-color: white;}
+    25% {background-color: red;}
+    50% {background-color: green;}
+    75% {background-color: blue;}
+    100% {background-color: white;}
+}
+&lt;/style&gt;
+&lt;hr/&gt;
+&lt;iframe height=&quot;265&quot; style=&quot;width: 100%;&quot; scrolling=&quot;no&quot; title=&quot;xWrbpJ&quot; src=&quot;//codepen.io/Jon-000/embed/xWrbpJ/?height=265&amp;theme-id=0&amp;default-tab=css,result&quot; frameborder=&quot;no&quot; allowtransparency=&quot;true&quot; allowfullscreen=&quot;true&quot;&gt;
+  See the Pen &lt;a href=&apos;https://codepen.io/Jon-000/pen/xWrbpJ/&apos;&gt;xWrbpJ&lt;/a&gt; by jon
+  (&lt;a href=&apos;https://codepen.io/Jon-000&apos;&gt;@Jon-000&lt;/a&gt;) on &lt;a href=&apos;https://codepen.io&apos;&gt;CodePen&lt;/a&gt;.
+&lt;/iframe&gt;
+&lt;br/&gt;
+&lt;p&gt;太极:&lt;/p&gt;
+&lt;div id=&quot;taiji-wrapper&quot;&gt;
+  &lt;div id=&quot;yin&quot;&gt;
+    &lt;div id=&quot;yinzhongyang&quot;&gt;
+      &lt;div id=&quot;xiaoyin&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div id=&quot;yang&quot;&gt;
+    &lt;div id=&quot;yangzhongyin&quot;&gt;
+      &lt;div id=&quot;xiaoyang&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;style&gt;
+#taiji-wrapper {
+  /* background-color: red; */
+  border: 1px solid grey;
+  margin: 0;
+  padding: 0;
+  border-radius: 50%;
+  position: relative;
+  width: 200px;
+  height: 200px;
+  animation-name: taiji;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+#yin {
+  background-color: black;
+  position: absolute;
+  left: 0;
+  width: 100px;
+  height: 200px;
+  border-bottom-left-radius: 200px;
+  border-top-left-radius: 200px;
+}
+#yang {
+  background-color: white;
+  position: absolute;
+  right:0;
+  width: 100px;
+  height: 200px;
+  border-bottom-right-radius: 200px;
+  border-top-right-radius: 200px;
+}
+#yinzhongyang {
+  background-color: white;
+  position: absolute;
+  right: 0;
+  width: 50px;
+  height: 100px;
+  border-radius: 100px 0 0 100px;
+}
+#xiaoyin {
+  background-color: black;
+  position: absolute;
+  right: -25px;
+  top: 25px;
+  width: 50px;
+  height: 50px;
+  border-radius: 100%;
+  z-index: 1;
+}
+#yangzhongyin {
+  background-color: black;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 50px;
+  height: 100px;
+  border-radius: 0 100px 100px 0;
+}
+#xiaoyang {
+  background-color: white;
+  position: absolute;
+  bottom: 25px;
+  right: 25px;
+  width: 50px;
+  height: 50px;
+  border-radius: 100%;
+  z-index: 1;
+}
+@keyframes taiji {
+  from {transform: rotate(0) translate(0, 0);}
+  to {transform: rotate(-360deg) translate(0px);}
+  
+}
+&lt;/style&gt;</content:encoded></item><item><title><![CDATA[CSS中的width]]></title><description><![CDATA[块级元素width默认为父元素宽度的100%,无内容也为100%; height默认定义content area的高度,受内容影响,无内容则为零. inline-block的默认宽度由内容决定 假设父元素为红色定宽300px,定高50px;子元素指定高度1…]]></description><link>https://wqzhao.github.com//20180320-box-width-in-css/</link><guid isPermaLink="false">https://wqzhao.github.com//20180320-box-width-in-css/</guid><pubDate>Tue, 20 Mar 2018 00:00:00 GMT</pubDate><content:encoded>&lt;h3&gt;块级元素width默认为父元素宽度的100%,无内容也为100%; height默认定义content area的高度,受内容影响,无内容则为零.&lt;/h3&gt;
+&lt;h3&gt;inline-block的默认宽度由内容决定&lt;/h3&gt;
+&lt;p&gt;假设父元素为红色定宽300px,定高50px;子元素指定高度10%. 子元素(绿色)不同display情况下其宽度默认如下:&lt;/p&gt;
+&lt;p&gt;block&lt;/p&gt;
+- 无内容
+&lt;div style=&quot;width:300px;height:50px;background-color:red;&quot;&gt;
+    &lt;div style=&quot;display: block; background-color: green;height:10%;&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+- 有内容,默认:子元素宽度不受内容影响,就是父元素宽度的100%
+&lt;div style=&quot;width:300px;height:50px;background-color:red;&quot;&gt;
+    &lt;div style=&quot;display: block; background-color: green;height:10%;&quot;&gt;hello&lt;/div&gt;
+&lt;/div&gt;
+&lt;hr/&gt;
+&lt;p&gt;inline-block&lt;/p&gt;
+ - 无内容
+&lt;div style=&quot;width:300px;height:50px;background-color:red;&quot;&gt;
+    &lt;div style=&quot;display: inline-block; background-color:green;height:10%;&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+ - 有内容
+&lt;div style=&quot;width:300px;height:50px;background-color:red;&quot;&gt;
+    &lt;div style=&quot;display: inline-block; background-color:green;height:10%;&quot;&gt;hello&lt;/div&gt;
+&lt;/div&gt;
+ - 有内容,且不指定子元素高度
+&lt;div style=&quot;width:300px;height:50px;background-color:red;&quot;&gt;
+    &lt;div style=&quot;display: inline-block; background-color:green;&quot;&gt;hello&lt;/div&gt;
+&lt;/div&gt;
+&lt;hr/&gt;
+&lt;p&gt;inline&lt;/p&gt;
+&lt;div style=&quot;width:300px;height:50px;background-color:red;&quot;&gt;
+    &lt;div style=&quot;display: inline; background-color:green;height:10%;&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;hr/&gt;&lt;p&gt;display: none则dom中有但是不渲染.&lt;/p&gt;
+&lt;ul style=&quot;display: none;&quot;&gt;
+    &lt;li&gt;gg&lt;/li&gt;
+    &lt;li&gt;xx&lt;/li&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;html&quot;&gt;&lt;pre class=&quot;language-html&quot;&gt;&lt;code class=&quot;language-html&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;p&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;block&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;p&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+- 无内容
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token style-attr language-css&quot;&gt;&lt;span class=&quot;token attr-name&quot;&gt; &lt;span class=&quot;token attr-name&quot;&gt;style&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&quot;&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token property&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;300px&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;50px&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;red&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; // 父元素
+    &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token style-attr language-css&quot;&gt;&lt;span class=&quot;token attr-name&quot;&gt; &lt;span class=&quot;token attr-name&quot;&gt;style&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&quot;&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token property&quot;&gt;display&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; block&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token property&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; green&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;10%&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+- 有内容,默认:子元素宽度不受内容影响,就是父元素宽度的100%
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token style-attr language-css&quot;&gt;&lt;span class=&quot;token attr-name&quot;&gt; &lt;span class=&quot;token attr-name&quot;&gt;style&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&quot;&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token property&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;300px&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;50px&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;red&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; // 父元素
+    &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token style-attr language-css&quot;&gt;&lt;span class=&quot;token attr-name&quot;&gt; &lt;span class=&quot;token attr-name&quot;&gt;style&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&quot;&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token property&quot;&gt;display&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; block&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token property&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; green&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;10%&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;hello&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;hr&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;/&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;p&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;inline-block&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;p&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+ - 无内容
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token style-attr language-css&quot;&gt;&lt;span class=&quot;token attr-name&quot;&gt; &lt;span class=&quot;token attr-name&quot;&gt;style&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&quot;&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token property&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;300px&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;50px&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;red&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; // 父元素
+    &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token style-attr language-css&quot;&gt;&lt;span class=&quot;token attr-name&quot;&gt; &lt;span class=&quot;token attr-name&quot;&gt;style&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&quot;&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token property&quot;&gt;display&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; inline-block&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token property&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;green&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;10%&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+ - 有内容
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token style-attr language-css&quot;&gt;&lt;span class=&quot;token attr-name&quot;&gt; &lt;span class=&quot;token attr-name&quot;&gt;style&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&quot;&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token property&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;300px&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;50px&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;red&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; // 父元素
+    &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token style-attr language-css&quot;&gt;&lt;span class=&quot;token attr-name&quot;&gt; &lt;span class=&quot;token attr-name&quot;&gt;style&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&quot;&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token property&quot;&gt;display&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; inline-block&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token property&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;green&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;10%&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;hello&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+ - 有内容,且不指定子元素高度
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token style-attr language-css&quot;&gt;&lt;span class=&quot;token attr-name&quot;&gt; &lt;span class=&quot;token attr-name&quot;&gt;style&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&quot;&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token property&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;300px&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;50px&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;red&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; // 父元素
+    &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token style-attr language-css&quot;&gt;&lt;span class=&quot;token attr-name&quot;&gt; &lt;span class=&quot;token attr-name&quot;&gt;style&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&quot;&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token property&quot;&gt;display&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; inline-block&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token property&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;green&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;hello&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;hr&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;/&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;p&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;inline&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;p&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token style-attr language-css&quot;&gt;&lt;span class=&quot;token attr-name&quot;&gt; &lt;span class=&quot;token attr-name&quot;&gt;style&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&quot;&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token property&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;300px&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;50px&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;red&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt; // 父元素
+    &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token style-attr language-css&quot;&gt;&lt;span class=&quot;token attr-name&quot;&gt; &lt;span class=&quot;token attr-name&quot;&gt;style&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&quot;&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token property&quot;&gt;display&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; inline&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token property&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;green&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;10%&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;hr&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;/&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;p&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;display: none则dom中有但是不渲染.&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;p&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;ul&lt;/span&gt;&lt;span class=&quot;token style-attr language-css&quot;&gt;&lt;span class=&quot;token attr-name&quot;&gt; &lt;span class=&quot;token attr-name&quot;&gt;style&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&quot;&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token property&quot;&gt;display&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; none&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;li&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;gg&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;li&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;li&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;xx&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;li&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;li&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;!!! =&gt; 子元素宽度高度的百分比是以父元素content area为基准进行计算的.&lt;/h3&gt;
+&lt;p&gt;当指定子元素的宽度和高度为父元素宽度高度的百分比值(下例为50%)时&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;若父元素为默认content-box,子元素宽高为父元素content area的宽度和高度值的百分比,即300/2=150和50/2=25&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div style=&quot;width:300px;height:50px;background-color:red;border:5px solid black;padding:5px;&quot;&gt;
+    &lt;div style=&quot;display: block; background-color:green;width: 50%;height:50%;&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;若父元素为border-box,子元素宽高为父元素content area的宽度和高度值的百分比,即(300-5x2-5x2)/2=140和(50-5x2-5x2)/2=15&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div style=&quot;width:300px;height:50px;background-color:red;border:5px solid black;padding:5px;box-sizing:border-box;&quot;&gt;
+    &lt;div style=&quot;display: block; background-color:green;width: 50%;height:50%;&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;html&quot;&gt;&lt;pre class=&quot;language-html&quot;&gt;&lt;code class=&quot;language-html&quot;&gt;若父元素为默认content-box
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token style-attr language-css&quot;&gt;&lt;span class=&quot;token attr-name&quot;&gt; &lt;span class=&quot;token attr-name&quot;&gt;style&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&quot;&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token property&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;300px&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;50px&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;red&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;border&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;5px solid black&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;padding&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;5px&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token style-attr language-css&quot;&gt;&lt;span class=&quot;token attr-name&quot;&gt; &lt;span class=&quot;token attr-name&quot;&gt;style&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&quot;&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token property&quot;&gt;display&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; block&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token property&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;green&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; 50%&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;50%&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+
+若父元素为border-box
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token style-attr language-css&quot;&gt;&lt;span class=&quot;token attr-name&quot;&gt; &lt;span class=&quot;token attr-name&quot;&gt;style&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&quot;&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token property&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;300px&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;50px&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;red&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;border&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;5px solid black&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;padding&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;5px&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;box-sizing&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;border-box&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+    &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token style-attr language-css&quot;&gt;&lt;span class=&quot;token attr-name&quot;&gt; &lt;span class=&quot;token attr-name&quot;&gt;style&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&quot;&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token property&quot;&gt;display&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; block&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token property&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;green&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; 50%&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;token property&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;50%&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;div&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content:encoded></item><item><title><![CDATA[CORS]]></title><description><![CDATA[what is CORS? Cross-Origin Resource Sharing(CORS) is a mechanism that uses additional HTTP header to let a user agent gain permission to…]]></description><link>https://wqzhao.github.com//20171202-CORS-intro/</link><guid isPermaLink="false">https://wqzhao.github.com//20171202-CORS-intro/</guid><pubDate>Sat, 02 Dec 2017 00:00:00 GMT</pubDate><content:encoded>&lt;h3&gt;what is CORS?&lt;/h3&gt;
+&lt;p&gt;Cross-Origin Resource Sharing(CORS) is a mechanism that uses additional HTTP header to let a user agent gain permission to access selected resources from a server on a different origin(domain) than the site currently in use.&lt;/p&gt;
+&lt;p&gt;人话：&lt;/p&gt;
+&lt;p&gt;特殊情况(cross-origin HTTP request)下，user agent(browser)资源获取被禁止。
+通过设置HTTP headers，从而允许资源的获取。亦即sharing&lt;/p&gt;
+&lt;p&gt;比如我们访问a网站，则浏览器发送&lt;code class=&quot;language-text&quot;&gt;GET /&lt;/code&gt;请求至a服务器，此时确定了a服务器为origin。
+a服务器返回给浏览器html，浏览器解析html并根据html请求图片、css等资源，这些资源若都在a服务器上，都可以请求。
+若有个别资源不在a服务器上在b服务器上怎么办？
+制定规则的大佬给了个解决办法，就叫CORS。a为origin，请求b便是cross-origin,图片文本等便是资源Resource，b的东西让a申请下来的html用，便是分享Sharing。
+怎么实现呢？
+浏览器和服务器沟通时，要告诉服务器浏览器是谁，什么情况，然后服务器根据情况决定给不给这个浏览器资源。
+浏览器发送http请求时，设置专门的http header，这些都由浏览器自动完成。那么浏览器都干了点啥呢？额外设置了http头，具体怎么设置的呢？暂不关心。
+关键问题在于，浏览器发送&lt;code class=&quot;language-text&quot;&gt;GET /&lt;/code&gt;和&lt;code class=&quot;language-text&quot;&gt;GET /image.png&lt;/code&gt;是两次独立的http事件，虽然我们在浏览器这里知道我们一个浏览器发了两个http请求，
+服务器也收到两个http请求，但服务器不知道这俩请求是同一个浏览器发的，也不知道是否是某个特定origin发送的html发起的请求。
+所以一旦浏览器在http头中把这些情况交代清楚了，服务器便可以根据情况来确定怎么答复了。
+比如可以只允许特定origin的访问获取资源。或者允许任意origin的访问。
+那么倘若我们不用浏览器发送http请求，用个curl甚至自己写个http client，然后在构造http头时填入服务器所需要的origin，不就也可以获取资源了吗？
+应该是这样的，不过意义不大，只是通过非cors的方式绕过了单一origin获取资源的限制，这只是在其他密码等各种认证之外的额外一层而已。
+那么假若我建了一个c站服务器在c服务器，当我访问c站时，origin便设定成了c，此时如果我请求只允许a站origin获取资源的b站时，便不被允许获取资源了。
+那么我c站可否用js自己构建http头以适应b站的要求呢？貌似是不被允许的，就像自动设置的cookie一样？大佬们给出的唯一出路便是CORS。&lt;/p&gt;
+&lt;p&gt;
+  &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/c274d3ad68f9b67e9509024793d3c729/1e6b8/CORS_principle.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+  
+  &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block;  max-width: 590px; margin-left: auto; margin-right: auto;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 69.51351351351352%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAOCAYAAAAvxDzwAAAACXBIWXMAABDrAAAQ6wFQlOh8AAADxUlEQVQ4y2NgIACUFRS4lJVU1DXU1GVVVNRUVJTV5IFYTU1FTU5SQkYVQ8P///9BWBKIJUD46fOXEnPmLZAESjGB5OfMXwxXa2pmweTp4cWcmVXICOLv3neM/cmLdxpv3n+1ffX2s9mzV59EGVasWLF269at/3Zs3/598+ZNPy5cOP/t5Yvn/0+cOL4SqIfPx9uXS0tTR0JHW1dOTk6BS1hYiLW+oYkNZOD9R89n/IeAfyDi24/fbxh27tz5f9GiRf8XL132f/bcBf/Pnr8Mlr195+777KwsdT5eIS57O0dRfX1DQTY2dnYmJka2/PwCLpCBL16+3gEy6O3b97/fv/8ANpTh1q1bv1+/eftv4f6n/1pXXv9XM+fon/I5Z/5PXXv26aE1E6VAGivLK5jDw8PB3nRzc2Pas2cvK4j99duP5a9fv/5/797d7w8e3P/94cOHPwxnzpz+e/7Cpf8ZPXv+OeQs+e+as+CvT/X2/4U9656vnl6vzCmmzRkdFSMaFRXNW1hUzJ6elsa5a9duDpCBwPBe9x8NMJw7e/bv5StX/s/ddPZf97IT/yesPve3f/W5/4s3n3y+bfkUSfRIBBrMmpCUygxiv37/VfbLt19RX7//yv/y7Wfm52+/HBiu37jx99mLF/9fvHj679WrZ/9fvXj69+PHt/8fPrz/NCc7R0FMRNRCRUXVQlFOwV5RXsFWQV7RTFZOQRzkGKzgYmXj33smTv/vOfj+u2vr/f+mnfffx9ae/2+39j1rvHZeGhhwAtpaOuIqyioiysqq4kpKyhwwvZ+//9P4+Plb8bfvP1u/fPvR8P7T91CGWzHpvx8z8P27xSfz7zG39L97PNJ/HrKJ/r+aXvCs4uQRZaA+5pCQUG4NLS1mqDnM7R1dYEOfvXizESMM7586+//90ZP/XwHxaxA+cuL/uxNn/t84cepdaV2tmpqMHLefr5+wrY09LzcnN6uQkBBrc0sLJ8jADx8/r/n8+fP/+w8efnv06PGvHz9+/GI4dubMzqfv3v5/+vbNVyD+/uz9u6+PXr78v//w4a1APRz+gQGspiYmbLLSMiysrMxMxibGLPPnz2eDpsNtf/78+f/yxYu/b9++/f/z509wwDIWZGTax4RFhCZFx/olRsf65mdkudTHJYHTmpqaOr+crAKvmqqGIDAMBTXVNaUCA4MFQXLff/5pguaSr0D84++//3dh4QvKt/wgFwExO5Rm0NfT4wQWDGYqyqoOQNoJiI2UFJUdgAZrwjReu/Nc/Pmrj9qPn79X3XX0OgcAtA8MF0pw7aIAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+    &gt;
+      &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        style=&quot;width: 100%; height: 100%; margin: 0; vertical-align: middle; position: absolute; top: 0; left: 0; box-shadow: inset 0px 0px 0px 400px white;&quot;
+        alt=&quot;CORS principle&quot;
+        title=&quot;&quot;
+        src=&quot;/static/c274d3ad68f9b67e9509024793d3c729/40fad/CORS_principle.png&quot;
+        srcset=&quot;/static/c274d3ad68f9b67e9509024793d3c729/707e9/CORS_principle.png 148w,
+/static/c274d3ad68f9b67e9509024793d3c729/649e0/CORS_principle.png 295w,
+/static/c274d3ad68f9b67e9509024793d3c729/40fad/CORS_principle.png 590w,
+/static/c274d3ad68f9b67e9509024793d3c729/b3fef/CORS_principle.png 885w,
+/static/c274d3ad68f9b67e9509024793d3c729/1e6b8/CORS_principle.png 925w&quot;
+        sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+      /&gt;
+    &lt;/span&gt;
+  &lt;/span&gt;
+  
+  &lt;/a&gt;
+    &lt;/p&gt;
+&lt;p&gt;可见有两个方面需要讨论：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;特殊情况具体是指什么情况？&lt;/p&gt;
+&lt;p&gt;A user agent makes a cross-origin HTTP request when it requests a resource from a different domain, protocol, or port than the one from which the current document originated.
+人话：
+在浏览器的本浏览页新发起一个资源请求，但是该请求与获取本浏览页时所用的请求的的domain、protocl、port不同，此时发送的请求即cross-origin HTTP request&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如何设置HTTP headers？&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;浏览器端的设置有浏览器自动完成，服务器端需要自己设置。
+可见CROS这一机制需要浏览器端和服务器端的支持。&lt;/p&gt;
+&lt;p&gt;浏览器端的请求头中有Origin字段，指出请求来源，例如&lt;code class=&quot;language-text&quot;&gt;Origin: http://foo.example&lt;/code&gt;,不含路径信息只有服务器名。&lt;/p&gt;
+&lt;p&gt;适用对象：
+XMLHttpRequest和Fetch API均属于以上描述的限制和解决方案的适用者。这两者发出的请求有可能符合被限制的情形，需要适时地适用CORS机制摆脱限制。&lt;/p&gt;
+&lt;p&gt;设置的http headers如何发挥作用？&lt;/p&gt;
+&lt;p&gt;分两种情形：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Simple requests，不触发预检(preflight)&lt;/li&gt;
+&lt;li&gt;Preflighted requests，需先使用OPTIONS方法发送一个http请求作为预检&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;什么情景算是Simple requests？&lt;/p&gt;
+&lt;p&gt;同时符合以下条件：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;http methods：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;GET&lt;/li&gt;
+&lt;li&gt;HEAD&lt;/li&gt;
+&lt;li&gt;POST&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;headers字段属于以下三种情形，只有最后一种可以手动设置&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;user agent自动设置的,例如&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Connection&lt;/li&gt;
+&lt;li&gt;User-Agent&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;headers with names defined in the Fetch spec as a “forbidden header name”
+&lt;a href=&quot;https://fetch.spec.whatwg.org/#forbidden-header-name&quot;&gt;spec详&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;headers which the Fetch spec defines as being a “CORS-safelisted request-header”
+&lt;a href=&quot;https://fetch.spec.whatwg.org/#cors-safelisted-request-header&quot;&gt;spec详情&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Accept&lt;/li&gt;
+&lt;li&gt;Accept-Language&lt;/li&gt;
+&lt;li&gt;Content-Language&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Content-Type
+并且这一字段的取值只能是以下三个&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;application/x-www-form-urlencoded&lt;/li&gt;
+&lt;li&gt;multipart/form-data&lt;/li&gt;
+&lt;li&gt;text/plain&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;DPR&lt;/li&gt;
+&lt;li&gt;Downlink&lt;/li&gt;
+&lt;li&gt;Save-Data&lt;/li&gt;
+&lt;li&gt;Viewport-Width&lt;/li&gt;
+&lt;li&gt;Width&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;No event listeners are registered on any XMLHttpRequestUpload object used in the request; these are accessed using the XMLHttpRequest.upload property.&lt;/p&gt;
+&lt;p&gt;No ReadableStream object is used in the request
+&lt;br&gt;
+什么情景算preflighted requests&lt;/p&gt;
+&lt;p&gt;todo&lt;/p&gt;
+&lt;p&gt;服务器端能对http header做哪些设置？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Access-Control-Allow-Origin&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Access-Control-Expose-Headers&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Access-Control-Max-Age&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Access-Control-Allow-Credentials&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Access-Control-Allow-Methods&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Access-Control-Allow-Headers&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[ubuntu vps security config]]></title><description><![CDATA[vps安全设置 设置防火墙
+UFW: Uncomplicated Firewall
+Ubuntu系统默认自带，但默认未激活 提示Status: inactive
+Different applications can register their profiles with UFW…]]></description><link>https://wqzhao.github.com//20171102-vps-security-config/</link><guid isPermaLink="false">https://wqzhao.github.com//20171102-vps-security-config/</guid><pubDate>Thu, 02 Nov 2017 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;vps安全设置&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;设置防火墙
+UFW: Uncomplicated Firewall
+Ubuntu系统默认自带，但默认未激活&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;sudo ufw status&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;提示Status: inactive
+Different applications can register their profiles with UFW upon installation.
+These profiles allow UFW to manage these applications by name.
+尽管我们没激活UFW，但是OpenSSH has a profile registered with UFW.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;sudo ufw app list&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;但这并不意味这OpenSSH默认是被允许的，现在ufw只是知道有OpenSSH这么个玩意而已。
+所以我们要先告诉ufw允许OpenSSH，然后再激活ufw服务。以免一会ssh被防火墙了连不上vps了。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;sudo ufw allow OpenSSH&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;据说如果OpenSSH不是默认的22端口的话会出错，不确定是否谣言，不过为以防万一，检查下。
+查看下ssh的设置：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;less /etc/ssh/sshd_config&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;/etc/ssh/ssh&lt;em&gt;config是ssh客户端的配置，/etc/ssh/sshd&lt;/em&gt;config是ssh服务器段守护进程的设置，所以我们在VPS这里当然查看服务端配置了。
+当然了，客户端要与服务端端口设置一致才能成功连接上ssh啦
+嗯，我们看一看到sshd_config中的端口为27207，我们也就是用着个端口号登录的ssh呀
+但是查看ufw中注册的profile端口号是Port: 22/tcp，查看命令如下：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;sudo ufw app info OpenSSH&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;照这么说我们之前allow OpenSSH其实是开了22端口？但我们ssh需要的27207端口反而没开？
+我们可以不适用profile的名称而直接使用端口号来指定要开放的端口&lt;code class=&quot;language-text&quot;&gt;sudo ufw allow 27207&lt;/code&gt;
+但如果我们同时运行了这两条代码，是不是就同时开放了22和27207端口？多开放了一个22吧。或者只运行后一条命令。这里我们不运行这条代码。
+我们也可以纠正profile，然后只运行前一条命令。
+&lt;code class=&quot;language-text&quot;&gt;man ufw&lt;/code&gt;我们可以查到这样的描述： ufw supports application integration by reading profiles located in /etc/ufw/applications.d. 其实本渣渣是先谷歌再man的。
+所以我们用vim修改下：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;vim /etc/ufw/applications.d/openssh-server&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;修改完成后保存时提示只读，所以我们其实应该通过sudo vim来修改这个文件。这里有个小技巧，可以sudo保存未用sudo vim打开的文件：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;:w !sudo tee %&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;然后按l键(L)oad
+再查看下发现已经自动更新了，虽然有app update PROFILE命令。。。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;sudo ufw app info OpenSSH&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;既然如此我们就激活防火墙吧&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;sudo ufw enable&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;我们可以查看下status，然后退出ssh重新登录试下。事实证明退出ssh去就登不上了。。。
+此时指定以22端口&lt;code class=&quot;language-text&quot;&gt;ssh -p 22 zhao@stillbroken.me&lt;/code&gt;登录ssh会收到提示被拒绝；指定27207或27208或272之类的会没用回应。
+由此可见，之前allow OpenSSH命令时确实开放了profile中默认的22端口而且未开放27207端口，因此VPS响应了22端口的ssh请求，但由于端口号不正确，因此回复拒绝；而以其他端口尝试ssh登录则直接被墙了，这是由于后面我们虽然修改了profile但未应用。
+只好在bandwagonhost的控制台用root登录然后运行ufw app update OpenSSH，然后就可以登录了。。。单纯的重启VPS是没用的。
+好吧，看来虽然&lt;code class=&quot;language-text&quot;&gt;sudo ufw app info OpenSSH&lt;/code&gt;命令结果显示改了，但只是文件改了，配置还需要通过&lt;code class=&quot;language-text&quot;&gt;sudo app update OpenSSH&lt;/code&gt;来加载修改后的配置。
+切记！！！要update配置！
+可见profile其实就像命令行中的alias一样或者ip的域名一样，只是指定了一个端口号的人类易于记忆的名字而已。
+现在我们的shadowsocks也不能用啦，赶紧开放端口！
+直接在ufw的配置文件夹/etc/ufw/applications.d/下新建：
+/etc/ufw/applications.d/shadowsocks-libev&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;[Shadowsockslibev]
+title=shadowsocks service
+description=Shadowsocks is a lightweight socks5 proxy, Originally written in Python. Shadowsocks-libev is written in C.
+ports=8388        &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;此时运行sudo ufw app list即可发现多了个应用Shasowsockslibev&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;sudo ufw app update all
+sudo ufw status
+sudo ufw allow Shadowsockslibev
+sudo ufw status&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;现在ss可以用了。
+编辑/etc/ufw/applications.d/中的配置文件后，若没新添加app，这update就行了；若新增加了app，需要allow。最后通过status查看状态。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[vps ubuntu 16.04安装ss]]></title><description><![CDATA[bandwagonhost控制面板KiwiVM安装新的OS,ubuntu 16.04 LTS x86_64 安装完成后页面会给出root密码和端口号 本地电脑命令行ssh远程连接到vps： 输入前面给出的root密码 重置root密码 输入新密码Ohroot…]]></description><link>https://wqzhao.github.com//20171014-vps-config-intro/</link><guid isPermaLink="false">https://wqzhao.github.com//20171014-vps-config-intro/</guid><pubDate>Sat, 14 Oct 2017 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;bandwagonhost控制面板KiwiVM安装新的OS,ubuntu 16.04 LTS x86_64&lt;/p&gt;
+&lt;p&gt;安装完成后页面会给出root密码和端口号&lt;/p&gt;
+&lt;p&gt;本地电脑命令行ssh远程连接到vps：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;ssh -p 27202 root@97.64.37.190&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;输入前面给出的root密码&lt;/p&gt;
+&lt;p&gt;重置root密码&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;passwd //可加参数指定修改哪个用户的密码，不指定则默认为修改当前用户&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;输入新密码Ohroot&lt;/p&gt;
+&lt;p&gt;登录成功后创建一个新的普通用户，（用户名开头不能大写，这似乎是Debian的默认规定，因此用户名就设置为全小写好了）&lt;/p&gt;
+&lt;p&gt;useradd和adduser区别自行百度或man，这里使用adduser&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;adduser zhao&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;按照提示设置密码hizhao&lt;/p&gt;
+&lt;p&gt;为用户添加sudo权限，命令行输入：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;visudo&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;添加：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;zhao ALL=(ALL:ALL) ALL&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;ctrl+x退出，y保存，回车不修改文件名&lt;/p&gt;
+&lt;p&gt;在创建新用户时提示了一个错误信息：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+      	LANGUAGE = (unset),
+      	LC_ALL = (unset),
+      	LC_PAPER = &amp;quot;zh_CN.UTF-8&amp;quot;,
+      	LC_ADDRESS = &amp;quot;zh_CN.UTF-8&amp;quot;,
+      	LC_MONETARY = &amp;quot;zh_CN.UTF-8&amp;quot;,
+      	LC_NUMERIC = &amp;quot;zh_CN.UTF-8&amp;quot;,
+      	LC_TELEPHONE = &amp;quot;zh_CN.UTF-8&amp;quot;,
+      	LC_IDENTIFICATION = &amp;quot;zh_CN.UTF-8&amp;quot;,
+      	LC_MEASUREMENT = &amp;quot;zh_CN.UTF-8&amp;quot;,
+      	LC_TIME = &amp;quot;zh_CN.UTF-8&amp;quot;,
+      	LC_NAME = &amp;quot;zh_CN.UTF-8&amp;quot;,
+      	LANG = &amp;quot;en_US.UTF-8&amp;quot;
+    are supported and installed on your system.
+perl: warning: Falling back to a fallback locale (&amp;quot;en_US.UTF-8&amp;quot;).&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;根据这篇文章，因此安装中文语言支持：&lt;/p&gt;
+&lt;p&gt;文章对错有待考究，但安装中文语言支持以后总会有用的。&lt;/p&gt;
+&lt;p&gt;为了避免潜在问题（这可能只是我的过虑），退出root然后使用新建的一般用户zhao的用户名和密码登录vps&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;ssh -p 27207 zhao@97.64.37.190&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;然后执行如下操作，更新系统并安装中文语言包，便于支持以后涉及到中文字符：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install language-pack-zh-hans&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;shadowsocks最初为python版，不过作者clowwindy被关照了～祝福～&lt;/p&gt;
+&lt;p&gt;shadowsocks-libev为C语言版，轻量级、偏底层、性能好，对我来说不求什么其他功能就够用了。其实是其他功能有点搞不清是干啥的～&lt;/p&gt;
+&lt;p&gt;安装shadowsocks-libev，参考doc at github&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;sudo apt-get install software-properties-common -y
+sudo add-apt-repository ppa:max-c-lv/shadowsocks-libev
+sudo apt-get update
+sudo apt install shadowsocks-libev&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;创建配置文件/etc/shadowsocks-libev/s1.json&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;{
+  &amp;quot;server&amp;quot;:&amp;quot;97.64.37.190&amp;quot;, //vps地址，去掉此行不设置也能用，默认监听0.0.0.0:server_port
+  &amp;quot;server_port&amp;quot;:8388, //和客户端的server_port一致
+  &amp;quot;local_port&amp;quot;:1080,  //亲测改成1081，和客户端的local_port不一致也行，去掉此行也能用～～
+  &amp;quot;password&amp;quot;:&amp;quot;ZDgwOWE0OT&amp;quot;, //和客户端一致
+  &amp;quot;timeout&amp;quot;:60,
+  &amp;quot;method&amp;quot;:&amp;quot;aes-256-gcm&amp;quot; //和客户端一致
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;可通过ss-server -c /etc/shadowsocks-libev/s1.json运行&lt;/p&gt;
+&lt;p&gt;客户端运行ss-local -c ss2.json，然后便可以打开浏览器访问YouTube。&lt;/p&gt;
+&lt;p&gt;可以参考以下命令直接运行shadowsocks-libev服务&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;sudo service shadowsocks-libev start
+sudo service shadowsocks-libev stop
+sudo service shadowsocks-libev status
+sudo service shadowsocks-libev restart&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;这时默认调用/etc/shadowsocks-libev/config.json&lt;/p&gt;
+&lt;p&gt;故而做如下调整：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;cd /etc/shadowsocks-libev
+sudo mv config.json config_origin.json //仍保留原本的默认json，其实没啥用，可以删了
+sudo mv s1.json config.json //把刚才创建的json配置改成默认的配置文件名
+sudo service shadowsocks-libev status //查看下状态
+sudo service shadowsocks-libev stop //停下之前的运行，强迫症。。。
+sudo service shadowsocks-libev start //运行服务
+sudo service shadowsocks-libev status //再看下，强迫症。。。&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;看status命令返回的结果，应该是调用了这个命令1577 /usr/bin/ss-server -c /etc/shadowsocks-libev/config.json -u&lt;/p&gt;
+&lt;p&gt;-c指定配置json路径，-u通过ss-server —help命令来查看是Enable UDP relay的作用，意义暂时不理解，有待学习。&lt;/p&gt;
+&lt;p&gt;浏览器试下访问外网没问题就可以exit退出ssh了。&lt;/p&gt;
+&lt;p&gt;或者通过ss-server命令启动&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;sudo ss-server -c /etc/shadowsocks-libev/config.json -v&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;运行是提示：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;This system doesn&amp;#39;t provide enough entropy to quickly generate high-quality random numbers
+Installing the rng-utils/rng-tools or haveged packages may help.
+On virtualized Linux environments, also consider using virtio-rng.
+The service will not start until enough entropy has been collected.&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;从apt里找一个相关的安装试试，然后就没再出现此提示&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;sudo apt-cache search rng
+sudo apt-get install rng-tools&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;客户端我这里为ubuntu 16.04桌面版，故同样直接使用shadowsocks-libev，安装方法同上使用PPA添加到apt的源中即可&lt;/p&gt;
+&lt;p&gt;然后创建个json文件声明配置&lt;/p&gt;
+&lt;p&gt;运行ss-local -c path/to/json即可启动&lt;/p&gt;
+&lt;p&gt;可加入参数 -v意为verbose mode，可以看到的详情。&lt;/p&gt;
+&lt;p&gt;浏览器chrome还要装个SwitchyOmega浏览器插件并配置，ArchLinux的wiki讲的比较清楚。&lt;/p&gt;
+&lt;p&gt;告诉域名解析服务器，当访问stillbroken.me这个域名时，指向ip地址为我的vps地址。进行如下操作：&lt;/p&gt;
+&lt;p&gt;在DNSPOD中设置记录类型A的记录值为vps的ip地址97.64.37.190，然后便可以使用ssh -p 27207 zhao@stillbroken.me登录&lt;/p&gt;
+&lt;p&gt;登录后运行hostname命令可以看到主机名仍为默认的ubuntu，毕竟我没设置过这玩意，那这个hostname是做什么用的呢？什么时候要设置呢？&lt;/p&gt;
+&lt;p&gt;命令 whois 域名可以查看域名信息&lt;/p&gt;</content:encoded></item><item><title><![CDATA[express学习笔记]]></title><description><![CDATA[learn express web framework setup environment install nvm     是用来管理node版本的，Node Version Manager   activate nvm by sourcing it from your…]]></description><link>https://wqzhao.github.com//20170918-express学习笔记/</link><guid isPermaLink="false">https://wqzhao.github.com//20170918-express学习笔记/</guid><pubDate>Mon, 18 Sep 2017 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;learn express web framework&lt;/h1&gt;
+&lt;h2&gt;setup environment&lt;/h2&gt;
+&lt;h3&gt;install nvm&lt;/h3&gt;
+&lt;p&gt;  &lt;a href=&quot;https://github.com/creationix/nvm&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;nvm&lt;/code&gt;&lt;/a&gt; 是用来管理node版本的，Node Version Manager&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;  cd ~/
+  git clone https://github.com/creationix/nvm.git .nvm
+  cd .nvm
+  git checkout v0.33.4&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;  activate nvm by sourcing it from your shell&lt;/p&gt;
+&lt;p&gt;  写入terminal的配置文件实现自动source&lt;/p&gt;
+&lt;p&gt;  以bash为例子，则在&lt;code class=&quot;language-text&quot;&gt;~/.bashrc&lt;/code&gt;添加如下&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;  export NVM_DIR=&amp;quot;$HOME/.nvm&amp;quot;
+  [ -s &amp;quot;$NVM_DIR/nvm.sh&amp;quot; ] &amp;amp;&amp;amp; \. &amp;quot;$NVM_DIR/nvm.sh&amp;quot;  # This loads nvm
+  [ -s &amp;quot;$NVM_DIR/bash_completion&amp;quot; ] &amp;amp;&amp;amp; \. &amp;quot;$NVM_DIR/bash_completion&amp;quot;  # This loads nvm bash_completion&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;  安装后可能需要重新打开命令行。&lt;/p&gt;
+&lt;p&gt;  一些指令：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;  nvm --help //查看帮助信息
+  nvm ls //查看已安装的版本
+  nvm ls-remote //远程可用版本
+  nvm install --lts //安装最新的LTS版本，默认别名为default
+  nvm install v8 //安装8+版本的最新版,默认别名为node以及stable
+  nvm version node //查看node所指代的版本
+  nvm version stable //查看stable所指代的版本
+  nvm version default //查看default所指代的版本
+  nvm use default //指定使用的版本为default所指代的版本
+  nvm which node //显示别名node所指代的路径
+  nvm which default //显示别名default所指代的路径
+  nodejs --version //因为是通过nvm而非如node官网指示的方式进行安装，会提示nodejs未安装
+  node --version //结果为nvm use所指定的版本
+  which node //结果为nvm use所指定的版本的路径
+  nvm install v8 --reinstall-packages-from=v8 //更新当前使用的8+版本到最新LTS的8+版本，如8.9.1到8.9.3&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;  在命令行中使用&lt;code class=&quot;language-text&quot;&gt;node&lt;/code&gt;命令时，即指向&lt;code class=&quot;language-text&quot;&gt;nvm use &amp;lt;version&amp;gt;&lt;/code&gt;所指代的node版本,路径在~/.nvm的后代目录中&lt;/p&gt;
+&lt;p&gt;  &lt;code class=&quot;language-text&quot;&gt;nvm&lt;/code&gt;将各版本node安装至~/.nvm/versions/node目录下，通过&lt;code class=&quot;language-text&quot;&gt;nvm use &amp;lt;version&amp;gt;&lt;/code&gt;改变shell中&lt;code class=&quot;language-text&quot;&gt;node&lt;/code&gt;命令指向.nvm目录下的不同Node版本&lt;/p&gt;
+&lt;p&gt;  npm为对应版本node的npm&lt;/p&gt;
+&lt;p&gt;  !更深入的理解需要复习linux的文件系统和shell等相关知识．&lt;/p&gt;
+&lt;h2&gt;创建项目的方式&lt;/h2&gt;
+&lt;h3&gt;方式一：手动建立一个app&lt;/h3&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;  mkdir myapp
+  cd myapp
+  npm init //按照提示设置一些信息，这些信息将会存入./package.json文件
+  npm install express --save //安装express这个package,--save的作用是将安装的package版本信息作为dependencies存入package.json文件
+  npm install eslint --save-dev //保存为开发环境下才使用的包&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;  在js文件中，通过&lt;code class=&quot;language-text&quot;&gt;require()&lt;/code&gt;来引入,例如在myapp/index.js文件中：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;  &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; express &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;express&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; app &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;express&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;  在package.json文件中可以设置命令行命令的别名，再通过&lt;code class=&quot;language-text&quot;&gt;npm run-script &amp;lt;别名&amp;gt;&lt;/code&gt;或&lt;code class=&quot;language-text&quot;&gt;npm run &amp;lt;别名&amp;gt;&lt;/code&gt;运行.
+例如，可在myapp/package.json中添加设置：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;  &amp;quot;scripts&amp;quot;: {
+    &amp;quot;lint&amp;quot;: &amp;quot;eslint /home/forward/test/express/myapp/index.js
+  }&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;  然后可以在&lt;code class=&quot;language-text&quot;&gt;myapp/&lt;/code&gt;目录下运行&lt;code class=&quot;language-text&quot;&gt;npm run lint&lt;/code&gt;&lt;/p&gt;
+&lt;h3&gt;方式二：通过express application generator建立一个app&lt;/h3&gt;
+&lt;p&gt;The Express Application Generator is not the only generator for Express applications,and the generated project is not the only viable way to structure your files and directories.&lt;/p&gt;
+&lt;p&gt;就是个方便搭架子的工具&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;npm install express-generator -g //参数-g表示全局安装
+express myapp2
+cd myapp2
+npm install
+DEBUG=myapp2:* npm start&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;项目练习:The Local Library website&lt;/h2&gt;
+&lt;p&gt;做一个app需要考量这些方面：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;快速生产：熟练程度，学习曲线&lt;/li&gt;
+&lt;li&gt;流行程度：社区活力，技术支持&lt;/li&gt;
+&lt;li&gt;语言风格&lt;/li&gt;
+&lt;li&gt;性能&lt;/li&gt;
+&lt;li&gt;特性&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;技术选择：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;view engine:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/expressjs/express/wiki#template-engines&quot;&gt;使用express已支持的引&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://expressjs.com/en/guide/using-template-engines.html&quot;&gt;配置express未支持的引擎&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;CSS stylesheet engine:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;LESS&lt;/li&gt;
+&lt;li&gt;SASS&lt;/li&gt;
+&lt;li&gt;Compass&lt;/li&gt;
+&lt;li&gt;Stylus&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;database:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;express创建的app可以使用任何Node支持的数据库&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://expressjs.com/en/guide/database-integration.html&quot;&gt;express database integration guide&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;使用database的两种方式：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Using the databses’ native qurey language (e.g. SQL)&lt;/li&gt;
+&lt;li&gt;Using an Object Data Model (“ODM”) / Object Relational Model (“ORM”)
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;本项目：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;目录名称：express-locallibrary-tutorial&lt;/li&gt;
+&lt;li&gt;模板引擎：Pug template library&lt;/li&gt;
+&lt;li&gt;CSS引擎：无&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;步骤：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;sh&quot;&gt;&lt;pre class=&quot;language-sh&quot;&gt;&lt;code class=&quot;language-sh&quot;&gt;mkdir LearnExpress //创建一个新的学习目录
+cd LearnExpress
+express express-locallibrary-tutorial --view=pug
+cd express-locallibrary-tutorial
+npm install //安装package.json中所指定的dependency packages
+DEBUG=express-locallibrary-tutorial:* npm start //可访问http://localhost:3000/
+npm install nodemon --save-dev //实现实时更新，安装nodemon提供支持express website修改后服务器的自动重启，nodemon: https://github.com/remy/nodemon&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;版本：&lt;code class=&quot;language-text&quot;&gt;&amp;quot;express&amp;quot;: &amp;quot;~4.15.2&amp;quot;&lt;/code&gt;,&lt;code class=&quot;language-text&quot;&gt;&amp;quot;pug&amp;quot;: &amp;quot;~2.0.0-beta11&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;此时nodemon为非全局安装，不能直接在命令行中使用．&lt;/p&gt;
+&lt;p&gt;可以设置package.json文件,添加如下内容，通过&lt;code class=&quot;language-text&quot;&gt;npm run-script 别名&lt;/code&gt;运行,&lt;code class=&quot;language-text&quot;&gt;npm start&lt;/code&gt;为特例，即&lt;code class=&quot;language-text&quot;&gt;npm run start&lt;/code&gt;省略&lt;code class=&quot;language-text&quot;&gt;run&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;json&quot;&gt;&lt;pre class=&quot;language-json&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token property&quot;&gt;&quot;script&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;start&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;node ./bin/www&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;devstart&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;nodemon ./bin/www&quot;&lt;/span&gt; //此行和上一行末尾的逗号为添加内容
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;现在可以依如下命令运行，附注：此时仍不能用&lt;code class=&quot;language-text&quot;&gt;nodemon ./bin/www&lt;/code&gt;在命令行运行，会提示找不到命令，因为非全局安装，不添加path只有npm知道运行nodemon&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;DEBUG&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;express-locallibrary-tutorial:* &lt;span class=&quot;token function&quot;&gt;npm&lt;/span&gt; run devstart&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;亦可输入&lt;code class=&quot;language-text&quot;&gt;rs&lt;/code&gt;重启.服务器&lt;/p&gt;
+&lt;p&gt;当在命令行运行&lt;code class=&quot;language-text&quot;&gt;npm run devstart&lt;/code&gt;时，会运行express-locallibrary-tutorial/bin/www&lt;/p&gt;
+&lt;p&gt;www文件为application entry point&lt;/p&gt;
+&lt;p&gt;在www文件第一行便通过&lt;code class=&quot;language-text&quot;&gt;var app = require(&amp;#39;../app&amp;#39;)&lt;/code&gt;引用了module，即app.js文件，此处代码省略了可选的”.js”后缀．&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-text&quot;&gt;require()&lt;/code&gt;是一个global node function&lt;/p&gt;
+&lt;p&gt;在app.js文件中&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; express &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;express&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;//引入express,import a module by name, module name!两种方式： name; path&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; app &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;express&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;//创建一个express application object，按惯例命名为app&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;//对这一app对象添加设置&lt;/span&gt;
+module&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;exports &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; app&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;　&lt;span class=&quot;token comment&quot;&gt;//export the app from the module&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;当我们导入一个模块的时候，便导入了这一对象．&lt;/p&gt;
+&lt;p&gt;Back in the www entry point file above, it is this &lt;code class=&quot;language-text&quot;&gt;module.exports&lt;/code&gt; object that is supplied to the caller when this file is imported.&lt;/p&gt;
+&lt;p&gt;由此可以看出，对于一个module文件：&lt;/p&gt;
+&lt;p&gt;第一部分是其依赖，即该模块所需导入的模块，此例即第一行，是app.js模块所需要导入的模块，也可能需要导入不止一个依赖&lt;/p&gt;
+&lt;p&gt;第二部分即此例第二行，是创建app模块的对象&lt;/p&gt;
+&lt;p&gt;中间是对这一对象的配置&lt;/p&gt;
+&lt;p&gt;最后一行则是导出创建的对象&lt;/p&gt;
+&lt;p&gt;??所以module的含义是把一个巨大的object单独存成一个文件进行配置??&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;A module is a JavaScript library/file that you can import into other code using Node’s &lt;code class=&quot;language-text&quot;&gt;require()&lt;/code&gt; function.
+Express itself is a module, as are the middleware and database libraries that we use in our Express applications.
+You will want to create your own modules, because this allows you to organise your code into managable parts — a monolithic single-file application is hard to understand and maintain.
+Using modules also helps you manage your namespace, because only the variables you explicitly export are imported when you use a module.
+To make objects available outside of a module you just need to assign them to the &lt;code class=&quot;language-text&quot;&gt;exports&lt;/code&gt; &lt;strong&gt;object&lt;/strong&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;see &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Introduction#Importing_and_creating_modules&quot;&gt;MDN&lt;/a&gt;
+更多有关module机制的学习有待进行，&lt;a href=&quot;https://nodejs.org/docs/latest-v6.x/api/modules.html&quot;&gt;Node module doc&lt;/a&gt;&lt;/p&gt;
+&lt;h3&gt;route模块的机制&lt;/h3&gt;
+&lt;p&gt;路由的module文件统一存放在express-locallibrary-tutorial/routes文件夹下&lt;/p&gt;
+&lt;p&gt;以express-locallibrary-tutorial/routes/index.js为例&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; express &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;express&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;//依赖&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; router &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; express&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;Router&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;　&lt;span class=&quot;token comment&quot;&gt;//创建express的router对象&lt;/span&gt;
+
+router&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;/&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;req&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; res&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; next&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  res&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;render&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;index&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;title&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;Express&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+module&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;exports &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; router&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;//输出router对象&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;在app.js中&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; index &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;./routes/index&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;//导入index路由模块&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt;
+app&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;use&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;/&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; index&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;//使用导入的module&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;可以看到，在app.js和/routes/index.js中两次设置了路径的匹配方式&lt;/p&gt;
+&lt;p&gt;在app.js中设置的路径将会作为前缀加到index.js中设置的路径上．&lt;/p&gt;
+&lt;p&gt;例如：在app.js中设置路径’/users’，在./routes/users.js中设置路径为’/profile’&lt;/p&gt;
+&lt;p&gt;则匹配路径为/users/profile&lt;/p&gt;
+&lt;p&gt;以&lt;code class=&quot;language-text&quot;&gt;router.get(){}&lt;/code&gt;函数为例，其接受两个参数：匹配路径和callback函数&lt;/p&gt;
+&lt;p&gt;匹配路径参数可有三种提供形式：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;写死的strings，例如： &lt;code class=&quot;language-text&quot;&gt;&amp;quot;/&amp;quot;&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;&amp;quot;/about&amp;quot;&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;&amp;quot;/book&amp;quot;&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;&amp;quot;/&amp;quot;&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;string patterns，这算是一个正则表达式的子集，规则包括一下４条：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;?&lt;/code&gt;: 0 or more of the preceding character. E.g. a route path of &lt;code class=&quot;language-text&quot;&gt;&amp;#39;/ab?cd&amp;#39;&lt;/code&gt; will matche endpoints &lt;code class=&quot;language-text&quot;&gt;acd&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;abcd&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;abbcd&lt;/code&gt; etc.&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;+&lt;/code&gt;: 1 or more of the preceding character.&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;*&lt;/code&gt;: an arbitrary string where the * character is placed.&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;()&lt;/code&gt;: Grouping match on a set of characters to perform another operation on. E.g. &lt;code class=&quot;language-text&quot;&gt;&amp;#39;/ab(cd)?e&amp;#39;&lt;/code&gt; will peform a ? match on (cd), it will match &lt;code class=&quot;language-text&quot;&gt;abe&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;abcde&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;abcdcde&lt;/code&gt;, and so on.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;JavaScript &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions&quot;&gt;regular expressions&lt;/a&gt;
+例如：&lt;code class=&quot;language-text&quot;&gt;app.get(/.*fish$/, function(req, res){})&lt;/code&gt;，注意此例没有引号．&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;路径中的变量如何获取？通过route parameters：&lt;/p&gt;
+&lt;p&gt;Route parameters: 提取路径的片段信息&lt;/p&gt;
+&lt;p&gt;Route parameters are named URL segments used to capture the values specified at thier position in the URL.&lt;/p&gt;
+&lt;p&gt;实现形式：以&lt;code class=&quot;language-text&quot;&gt;:&lt;/code&gt;后面跟变量名的形式对应于URL上的路径片段，则此变量名将获得对应路径片对的值，储存于&lt;code class=&quot;language-text&quot;&gt;req.params&lt;/code&gt;对象，通过点加变量名的形式进行调用．&lt;/p&gt;
+&lt;p&gt;例如：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;app&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;/user/:userId/books/:bookId&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;req&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; res&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// do something&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;若请求get地址&lt;code class=&quot;language-text&quot;&gt;http://localhost:3000/users/34/books/8989&lt;/code&gt;, 则&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;  req&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;params&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;userId &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;34&lt;/span&gt;
+  req&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;params&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;bookId &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;8989&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;注意：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;The names of route parameters must be made up of “word characters”(A-Z, a-z, 0-9, and _).&lt;/li&gt;
+&lt;li&gt;路由的先后顺序．例如除了以上URL路径，我们同时还需处理&lt;code class=&quot;language-text&quot;&gt;/book/create&lt;/code&gt;，我们并不希望捕获&lt;code class=&quot;language-text&quot;&gt;req.params.userId = create&lt;/code&gt;，我们希望执行的是其他操作，此时我们需要将处理此URL路径的route定义于&lt;code class=&quot;language-text&quot;&gt;/book/:bookId&lt;/code&gt;这个路由的前面．
+更多相关知识有待更深入学习 &lt;a href=&quot;http://expressjs.com/en/starter/basic-routing.html&quot;&gt;Express doc&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;callback函数接受三个参数：&lt;code class=&quot;language-text&quot;&gt;req&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;res&lt;/code&gt;, &lt;code class=&quot;language-text&quot;&gt;next&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;the HTTP Request object, HTTP response ,and the next function in the middleware chain.&lt;/p&gt;
+&lt;p&gt;Router functions are Express middleware, Which means they must either complete(respond to) the request or call the next function in the chain.&lt;/p&gt;
+&lt;p&gt;There are a number of &lt;a href=&quot;https://expressjs.com/en/guide/routing.html#response-methods&quot;&gt;response methods&lt;/a&gt; for ending the request/response cycle.&lt;/p&gt;
+&lt;p&gt;索引： &lt;a href=&quot;ttps://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Introduction#Using_middleware&quot;&gt;MDN&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The &lt;code class=&quot;language-text&quot;&gt;Router&lt;/code&gt; provides route methods for all HTTP verbs,用法大致相同&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;get()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;put()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;delete()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;options()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;trace()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;copy()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;lock()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;mkcol()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;move()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;purge()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;propfind()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;proppatch()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;unlock()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;report()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;mkactivity()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;checkout()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;merge()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;m-search()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;notify()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;subscribe()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;unsubscribe()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;patch()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;search()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;connect()&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;view机制&lt;/h3&gt;
+&lt;p&gt;在app.js中设置模板引擎：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt;
+app&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;views&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; path&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;join&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;__dirname&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;views&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+app&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;view engine&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;pug&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Serving static files
+&lt;a href=&quot;http://expressjs.com/en/4x/api.html#express.static&quot;&gt;express.static&lt;/a&gt; middleware&lt;/p&gt;
+&lt;h3&gt;添加数据库&lt;/h3&gt;
+&lt;h4&gt;安装MongoDB&lt;/h4&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.mongodb.com/download-center#community&quot;&gt;在ubuntu 16.04 LTS中apt安装Community Server版&lt;/a&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+&lt;span class=&quot;token keyword&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse&quot;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;tee&lt;/span&gt; /etc/apt/sources.list.d/mongodb-org-3.4.list
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;apt-get&lt;/span&gt; update
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;apt-get&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;install&lt;/span&gt; -y mongodb-org&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This version of MongoDB does not restrict network access by default. Please review the &lt;a href=&quot;https://docs.mongodb.com/manual/administration/security-checklist/?_ga=2.28129982.323441757.1509515501-1649049113.1506302297&quot;&gt;security checklist&lt;/a&gt; for instructions on how to prevent unauthorized access.&lt;/p&gt;
+&lt;h4&gt;运行MongoDB&lt;/h4&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;service&lt;/span&gt; mongod start //start MongoDB
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;service&lt;/span&gt; mongod stop //stop MongoDB
+&lt;span class=&quot;token function&quot;&gt;sudo&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;service&lt;/span&gt; mongod restart //restart MongoDB&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;验证Mongo成功启动，查看日志/var/log/mongodb/mongod.log，提示&lt;code class=&quot;language-text&quot;&gt;waiting for connections on port &amp;lt;port&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;tail&lt;/span&gt; -f /var/log/mongodb/mongod.log //-f用来持续监控实时更新&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;端口号默认为27017，可在/etc/mongod.conf中配置&lt;/p&gt;
+&lt;p&gt;默认数据存储文件路径为/var/lib/mongodb，默认日志文件路径为/var/log/mongodb,也在/etc/mongod.conf中配置&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;  ...
+  # Where and how to store data
+  storage:
+    dbPath: /var/lib/mongodb
+    journal:
+      enabled: true
+  ...
+  # where to write logging data
+  systemLog:
+    destination: file
+    logAppend: true
+    path: /var/log/mongodb/mongod.log
+  ...
+  # network interfaces
+  net:
+    port: 27017
+    bindIp: 127.0.0.1
+...&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;此处仍有两个知识点有待学习，UNIX ulimit Settings和user account，相关描述如下：&lt;/p&gt;
+&lt;p&gt;Most Unix-like operating systems limit the system resources that a session may use. These limits may nagatively impact MongoDB operation. See &lt;a href=&quot;https://docs.mongodb.com/manual/reference/ulimit/&quot;&gt;UNIX ulimit Settings&lt;/a&gt; for more information.
+The MongoDB instance stores its data files in /var/lib/mongodb and its log files in /var/log/mongodb by default, and runs using the mongodb user account. You can specify alternate log and data file directories in /etc/mongod.conf.
+If you change the user that runs the MongoDB process, you must modify the access control rights to the /var/lib/mongodb and /var/log/mongodb directories to give this user access to these directories.&lt;/p&gt;
+&lt;h4&gt;&lt;a href=&quot;https://docs.mongodb.com/manual/mongo/&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;mongo&lt;/code&gt; shell&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;an interactive JavaScript interface to MongoDB&lt;/p&gt;
+&lt;p&gt;已作为Community server版的一部分安装&lt;/p&gt;
+&lt;p&gt;运行mongo shell需要先运行MongoDB服务!&lt;/p&gt;
+&lt;p&gt;When you run &lt;code class=&quot;language-text&quot;&gt;mongo&lt;/code&gt; without any arguments, the mongo shell will attempt to connect to the MongoDB instance running on the localhost interface on port 27017. To specify a different host or port number, as well as other options, see &lt;a href=&quot;https://docs.mongodb.com/manual/reference/program/mongo/&quot;&gt;mongo Shell Reference Page&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;可以通过mongo远程连接数据库服务器&lt;/p&gt;
+&lt;p&gt;SSH登录VPS后，安装好Mongodb，初步设置UFW防火墙后。&lt;/p&gt;
+&lt;p&gt;If you intend to use the MongoDB server only locally with applications running on the same server,这就足够了。&lt;/p&gt;
+&lt;p&gt;若需要从远程连接数据库，需要设置UFW开通对应端口，UFW还可以设置访问者的ip。&lt;/p&gt;
+&lt;h5&gt;安装Mongoose&lt;/h5&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;  npm install mongoose --save //在app目录下运行，同时--save选项保存mongoose依赖至package.json&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;版本：&lt;code class=&quot;language-text&quot;&gt;&amp;quot;mongoose&amp;quot;: &amp;quot;^4.11.13&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;引用mongoose，连接MongoDB&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;  &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; mongoose &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;mongoose&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;// Import the mongoose module&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; mongoDB_addr &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;mongodb://127.0.0.1/databaseName&apos;&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;// 将数据库地址设为变量便于操作&lt;/span&gt;
+  mongoose&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;connect&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;mongoDB_addr&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;// Set up mongoose conncetion&lt;/span&gt;
+    useMongoClient&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Mongoose的默认连接逻辑自4.11.0弃用，新的连接逻辑使用&lt;code class=&quot;language-text&quot;&gt;useMongoClient&lt;/code&gt;选项&lt;/p&gt;
+&lt;p&gt;添加连接的两种方式：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;  &lt;span class=&quot;token comment&quot;&gt;// Using `mongoose.connect`&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; promise &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; mongoose&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;connect&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;mongodb://localhost/databaseName&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    useMongoClient&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/* other options */&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// Or `createConnection`&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; promise &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; mongoose&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;createConnection&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;mongodb://localhost/databaseName&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    useMongoClient&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/* other options */&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// Or, if you already have a connection&lt;/span&gt;
+  connection&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;openUri&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;mongodb://localhost/databaseName&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token comment&quot;&gt;/* options */&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;连接后会创建一个connection对象&lt;/p&gt;
+&lt;p&gt;This connection object is then used to create and retrieve models. Models are &lt;strong&gt;always&lt;/strong&gt; scoped to a single connection.&lt;/p&gt;
+&lt;p&gt;检测连接成功和连接错误&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;  db&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;on&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;error&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;error&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;bind&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;console&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;connection error:&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  db&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;once&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;open&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// we&apos;re connected!&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Models are defined using the &lt;code class=&quot;language-text&quot;&gt;mongoose.Schema&lt;/code&gt; interface.&lt;/p&gt;
+&lt;p&gt;Schemas are then “compiled” into models using &lt;code class=&quot;language-text&quot;&gt;mongoose.model()&lt;/code&gt; method.&lt;/p&gt;
+&lt;p&gt;Schema相当于是Model的规划表,model用来具体实现CRUD功能，model相当于mongoDB中的collection，model的instance代表组成collection的document．
+先通过&lt;code class=&quot;language-text&quot;&gt;mongoose.Schema&lt;/code&gt;创建一个规划表（&lt;code class=&quot;language-text&quot;&gt;new&lt;/code&gt;一个新对象）&lt;/p&gt;
+&lt;p&gt;然后通过&lt;code class=&quot;language-text&quot;&gt;mongoose.model&lt;/code&gt;创建新model，此方法接受两个参数：model的单数形式名字，建造此model所依照的规划表即schema对象&lt;/p&gt;
+&lt;h5&gt;如何使用mongoose&lt;/h5&gt;
+&lt;p&gt;建议：One schema/model per file&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;建立model&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;  &lt;span class=&quot;token comment&quot;&gt;// File: myapp/models/modelName1.js&lt;/span&gt;
+
+  &lt;span class=&quot;token comment&quot;&gt;// Require Mongoose&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; mongoose &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;mongoose&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// Define a schema&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; modeName1Schema &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;mongoose&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Schema&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    FieldName1 &lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; String&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    FieldName2 &lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Date&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// Export function to create &quot;modelName1&quot; model class&lt;/span&gt;
+  module&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;exports &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; mongoose&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;modelName1&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; modelName1Schema&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;此即创建了一个名为modelName1的类class，这个类当然同时也是一个object.待导出即可用&lt;/p&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;使用model&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;  &lt;span class=&quot;token comment&quot;&gt;// Create a modelName1 model just by requiring the module&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; modelName1 &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;../models/modelName1.js&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// Use the modelName1 object (model) to find all modelName1 records&lt;/span&gt;
+  modelName1&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;find&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;callback_function&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;mongoose的CRUD操作均为异步操作(asynchronous operation)，You supply a callback that is called when the operation completes.&lt;/p&gt;
+&lt;p&gt;The API uses the error-first argument convention, so the first argument for the callback will always be an error value(or null). If the API returns some result, this will be provided as the second argument.&lt;/p&gt;
+&lt;p&gt;例如：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;  modelName1&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; name&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;recordName1&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;err&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; recordName1_instance&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;err&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;handleError&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;err&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;创建一个modelName1的新record，提供一个object对象&lt;code class=&quot;language-text&quot;&gt;{name: &amp;#39;recordName1&amp;#39;}&lt;/code&gt;描述如何创建新record，&lt;/p&gt;
+&lt;p&gt;提供一个callback函数&lt;code class=&quot;language-text&quot;&gt;function(err, instance){}&lt;/code&gt;，当创建操作完成后，调用此函数，按照惯例或约定，默认第一个参数总是error value(or null)，若有返回值，如本例子中返回创建的新record实例，则作为callback函数的第二个参数．&lt;/p&gt;
+&lt;p&gt;附录：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;Following are all valid Schema Types.
+  String
+  Number
+  Date
+  Buffer
+  Boolean
+  Mixed
+  Objectid
+  Array&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;更多细节有待更深入学习&lt;a href=&quot;http://mongoosejs.com/index.html&quot;&gt;mongoose doc&lt;/a&gt;&lt;/p&gt;
+&lt;!-- controllers:functions that separate out the code to route requests from the code that actually processes requests. --&gt;</content:encoded></item><item><title><![CDATA[开篇-自警]]></title><description><![CDATA[…]]></description><link>https://wqzhao.github.com//20170910-开篇-自警/</link><guid isPermaLink="false">https://wqzhao.github.com//20170910-开篇-自警/</guid><pubDate>Sun, 10 Sep 2017 00:00:00 GMT</pubDate><content:encoded>&lt;h4&gt;这个与那个｜四　流产与断种&lt;/h4&gt;
+&lt;p&gt;鲁迅&lt;/p&gt;
+&lt;p&gt;近来对于青年的创作，忽然降下一个“流产”的恶谥，哄然应和的就有一大群。我现在相信
+，发明这话的是没有什么恶意的，不过偶尔说一说；应和的也是情有可原的，因为世事本来大概就这样。&lt;/p&gt;
+&lt;p&gt;我独不解中国人何以于旧状况那么心平气和，于较新的机运就那么疾首蹙额；于已成之局那么委屈求全，于初兴之事就这么求全责备？&lt;/p&gt;
+&lt;p&gt;智识高超而眼光远大的先生们开导我们：生下来的倘不是圣贤，豪杰，天才，就不要生；写出来的倘不是不朽之作，就不要写；改革的事倘不是一下子就变成极乐世界，或者，至少能给我(!)有更多的好处，就万万不要动！。。。。。。&lt;/p&gt;
+&lt;p&gt;那么，他是保守派么？据说：并不然的。他正是革命家。唯独他有公平，正当，稳健，圆满，平和，毫无流弊的改革法；现下正在研究室里研究着哩，——只是还没有研究好。&lt;/p&gt;
+&lt;p&gt;什么时候研究好呢？答曰：没有准儿。&lt;/p&gt;
+&lt;p&gt;孩子初学步的第一步，在成人看来，的确是幼稚，危险，不成样子的，或者简直是可笑的。但无论怎样的愚妇人，却总以恳切的希望的心，看他跨出这第一步去，绝不会因为他的走法幼稚，怕要阻碍阔人的路线而“逼死”他；也决步至于将他禁在床上，使他躺着研究到能够飞跑时再下地。因为她知道：假如这么办，即使长到一百岁也还是不会走路的。&lt;/p&gt;
+&lt;p&gt;古来就这样，所谓读书人，对于后起者却反而专用彰明较著的或改头换面的禁锢。近来自然客气些，有谁出来，大抵会遇见学士文人们挡驾：且住，请坐。接着是谈道理了：调查，研究，推敲，修养，。。。。。。结果是老死在原地方。否则，便得到“捣乱”的称号。我也曾有如现在的青年一样，向已死和未死的导师们问过应走的路。他们都说：不可向东，或西，或南，或北。但不说应该向东，或西，或南，或北。我终于发见他们心底里的蕴蓄了：不过是一个“不走”而已。&lt;/p&gt;
+&lt;p&gt;坐着而等待平安，等待前进，倘能，那自然是很好的，但可虑的是老死而所等待的却终于不至；不生育，不流产而等待一个英伟的宁馨儿，那自然也很可喜的，但可虑的是终于什么也没有。&lt;/p&gt;
+&lt;p&gt;倘以为与其所得的不是出类拔萃的婴儿，不如断种，那就无话可说。但如果我们永远要听见人类的足音，则我以为流产究竟比不生产还有望，因为这已经明明白白地证明着能够生产的了。&lt;/p&gt;
+&lt;p&gt;十二月二十日&lt;/p&gt;
+&lt;p&gt;（原刊1925年12月《国民新报副刊》，后收入《华盖集》）&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;http://www.ziyexing.com/luxun/luxun_zw_hgj_27.htm&quot;&gt;鲁迅文集×杂文集×华盖集&lt;/a&gt;&lt;/p&gt;</content:encoded></item><item><title><![CDATA[typescript introduction]]></title><description><![CDATA[INSTALL COMPILE 可以添加参数-w，即—watch。每当helloworld.ts文件保存时便自动编译helloworld.ts更新js文件。 在html中引用编译后的js文件即可。例如可以在浏览器的console中看到console.log…]]></description><link>https://wqzhao.github.com//20171212-typescript-intro/</link><guid isPermaLink="false">https://wqzhao.github.com//20171212-typescript-intro/</guid><pubDate>Wed, 06 May 2015 23:46:37 GMT</pubDate><content:encoded>&lt;h2&gt;INSTALL&lt;/h2&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;npm install -g typescript&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;COMPILE&lt;/h2&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;sh&quot;&gt;&lt;pre class=&quot;language-sh&quot;&gt;&lt;code class=&quot;language-sh&quot;&gt;tsc helloworld.ts&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;可以添加参数-w，即—watch。每当helloworld.ts文件保存时便自动编译helloworld.ts更新js文件。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;tsc helloworld.ts -w&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;在html中引用编译后的js文件即可。例如可以在浏览器的console中看到console.log的内容。&lt;/p&gt;
+&lt;p&gt;TypeScript是JavaScript的超集&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;npm install -g typescript
+tsc --version&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;cd ~/test
+mkdir ts-hello
+cd ts-hello
+atom main.ts&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;声明方式，两种：var或let&lt;/p&gt;
+&lt;p&gt;let声明的变量作用域更小，不能出块级作用域如for(let i = 0; i &amp;#x3C; 5; i++)&lt;/p&gt;
+&lt;p&gt;数据类型：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;let a: number;
+let b: boolean;
+let c: string;
+let d: any;
+let e: number[] = [1, 2, 3];
+let f: any[] = [1, true, &amp;#39;a&amp;#39;, false];
+
+let strArr: string[];
+let numArr: number[];
+let boolArr: boolean[];
+let strArr2: Array&amp;amp;lt;string&amp;amp;gt;;
+let numArr2: Array&amp;amp;lt;number&amp;amp;gt;;
+let boolArr2: Array&amp;amp;lt;boolean&amp;amp;gt;;
+
+let strNumTuple: [string, number]; // 假如对这个变量赋值时，先num再str则会编译成js时报错；先str再num其后再加别的则不会报错。
+
+let myVoid: void = undefined;
+let myVoid2: void = null;
+let myNull: null = null;
+let myNull2: null = undefined;
+let myUndefined: undefined = undefined;
+let myUndefined2: undefined = null;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;static type checking&lt;/p&gt;
+&lt;p&gt;strong typing&lt;/p&gt;
+&lt;p&gt;可以支持强类型声明，但不算强制，毕竟有js垫底&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;let message;
+message = &amp;#39;abc&amp;#39;;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;此时message是any类型&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;let message = ‘abc’；&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;此时message是string类型&lt;/p&gt;
+&lt;p&gt;string类型等特定类型时，输入 &lt;code&gt;message.&lt;/code&gt; 编辑器可以提示对应stirng类型可用的方法&lt;/p&gt;
+&lt;p&gt;any类型时没有提示，要得到提示，有两种方法：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;let message;
+message = &amp;#39;abc&amp;#39;;
+let endsWithC = (&amp;lt;string&amp;gt;message).endsWith(&amp;#39;c&amp;#39;);
+let alternativeWay = (message as string).endWith(&amp;#39;c&amp;#39;);&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;这两种(&lt;string&gt;message).和(message as string).只改变编辑器的行为，不影响编译，message类型仍为any&lt;/p&gt;
+&lt;p&gt;Enums&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;enum Direction {
+    Up = 1,
+    Down,
+    Left,
+    Right
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;1到4，不声明1则0到3&lt;/p&gt;
+&lt;p&gt;function&lt;/p&gt;
+&lt;p&gt;可以指定参数和返回值的类型&lt;/p&gt;
+&lt;p&gt;可以typeof检测类型&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;let mySum = function(num1:any, num2: number):number{
+    if(typeof num1 == &amp;#39;string&amp;#39;){
+    num1 = parseInt(num1);
+    }
+    return num1 + num2;
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Arrow function&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;let log = function(message){
+    console.log(message);
+}
+
+let doLog = (message) =&amp;gt; console.log(message);&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Interfaces&lt;/p&gt;
+&lt;p&gt;例如我们声明一个函数的参数时：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;let drawPoint = (a, b, c, d, e, f, g) =&amp;gt; {
+
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;参数太多了，我们可以将其封装为对象，然后只传入一个对象即可&lt;/p&gt;
+&lt;p&gt;调用函数时传入对象：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;//声明时只有一个参数
+let drawPoint = (point) =&amp;gt; {
+
+}
+
+//调用时传入一个对象
+drawPoint({
+    x: 1,
+    y: 2
+})&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;为避免传入的对象不符合要求，例如{name: ‘xxx’}，可进行inline annotation&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;//声明时指定要求
+let drawPoint = (point: {x: number, y: number}) =&amp;gt; {
+
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;这种声明指定了一种类似于mongoose中schema的东西，在mongoose中，schema相当于是定义model的模板和规范，指定model应该是什么样子的。&lt;/p&gt;
+&lt;p&gt;这里也是通过{x: bumber, y: number}指定传入的point要长成什么样子&lt;/p&gt;
+&lt;p&gt;可以将这种声明抽象出来，便于在其他函数中传入同样格式的对象&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;//我们将之称为interface，惯例：interface命名每个单词都首字母大写
+interface Point {
+    x: number,
+    y: number
+}
+
+//声明函数
+let drawPoint = (point: Point) =&amp;gt; {
+
+}
+
+//再声明一个函数
+let getDistance = (pointA: Point, pointB: Point) =&amp;gt; {
+
+}
+
+//调用函数
+drawPoint({
+    x: 1,
+    y: 2
+})&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;interface即接口的意思&lt;/p&gt;
+&lt;p&gt;将函数参数的格式要求封装为一个对象，并赋予这种对象一个专门的名字，即interface&lt;/p&gt;
+&lt;p&gt;按照interface的要求声明变量，然后将此变量作为参数传入函数即可。&lt;/p&gt;
+&lt;p&gt;额外再举个例子熟悉下&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;/* 原版
+function showTodo(todo: {title: string, text: string}){
+    console.log(todo.title + &amp;#39;: &amp;#39; + todo.text);
+};
+
+let myTodo = {title: &amp;#39;Trash&amp;#39;, text: &amp;#39;Take out trash&amp;#39;};
+
+showTodo(myTodo);
+*/
+
+// interface版
+interface Todo{
+    title: string;
+    text: string;
+}
+
+function showTodo(todo: Todo){
+    console.log(todo.title + &amp;#39;: &amp;#39; + todo.text);
+}
+
+let myTodo = {title:&amp;#39;Trash&amp;#39;, text: &amp;#39;Take out trash&amp;#39;}
+
+showTodo(myTodo);&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;cohesion&lt;/p&gt;
+&lt;p&gt;In computer programming, cohesion refers to the degree to which the elements inside a module belong togethor.&lt;/p&gt;
+&lt;p&gt;In object-oriented programming, if the methods that serve a class tend to be similar in many aspects, then the class is said to have high cohesion.&lt;/p&gt;
+&lt;p&gt;In a highly cohesive system, code readability and reusability is increased, while complexity is kept manageable.&lt;/p&gt;
+&lt;p&gt;基于这一原则,我们希望将一系列紧密联系的variables(properties)和functions(methods)组织在一起&lt;/p&gt;
+&lt;p&gt;在typescript中我们通过Class来实现&lt;/p&gt;
+&lt;p&gt;class&lt;/p&gt;
+&lt;p&gt;在mian.ts文件：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;class Point {
+    //
+    x: number;
+    y: number;
+
+    //这个函数可以不需要参数，可直接获得class内的x和y
+    draw(){
+    console.log(&amp;#39;X: &amp;#39; + this.x + &amp;#39;, Y: &amp;#39; + this.y);
+    }
+
+    getDistance(another: Point){
+
+    }
+}
+
+/*
+//注意这种奇怪的声明方式,Point这个class相当于是自定义的type，而一下语句实在声明一个变量point并指定其type为自定义的Point Class
+let point: Point;
+//但只有这个声明我们是无法运行下列方法的，此时会返回“TypeError: Cannot read property &amp;#39;draw&amp;#39; of undefined”
+point.draw();
+//要这样
+let point: Point = new Point();
+//或省略
+let point = new Point();
+*/
+
+//实例化
+let point = new Point();
+//调用
+point.draw();&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;然后命令行执行：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;tsc main.ts //转译为js
+node mian.js //运行js&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;输出结果：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;X: undefined, Y: undefined&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;如何赋值呢？可以在实例化后加上：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;point.x = 1;
+point.x = 2;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;命令行输入: &lt;code&gt;tsc main.ts &amp;#x26;&amp;#x26; node mian.js&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;执行结果：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;X: 1, Y: 2&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;全都要创建完实例后一个一个添加吗？创建实例时直接建筑好不就行了。HOW？使用constructor&lt;/p&gt;
+&lt;p&gt;constuctor&lt;/p&gt;
+&lt;p&gt;当进行实例化时，会调用constructor方法&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;//声明类
+class Point {
+    //Fields
+    x: number;
+    y: number;
+
+    //声明构造器
+    constructor(x: number, y: number){
+    this.x = x;
+    this.y = y;
+    };
+
+    draw(){
+    console.log(&amp;#39;X: &amp;#39; + this.x + &amp;#39;, Y: &amp;#39; + this.y);
+    }
+}
+
+//实例化
+let point = new Point(1, 2);
+
+//调用方法
+point.draw();&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;此时，指定的两个参数必须提供，若 &lt;code&gt;let point = new Point();&lt;/code&gt;则会报错。&lt;/p&gt;
+&lt;p&gt;如何改善呢？Typescript不能有多个构造器。&lt;/p&gt;
+&lt;p&gt;指定参数可选，方法如下：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;constructor(x?: number, y?: number){
+
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;必选参数不能跟在可选参数后边。&lt;/p&gt;
+&lt;p&gt;对于声明的实例，此时是可以改动的：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;let point = new Point(1, 2);
+point.x = 3;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;如何使实例化声明的参数不可改动呢？&lt;/p&gt;
+&lt;p&gt;引入概念：access modifier&lt;/p&gt;
+&lt;p&gt;Access modifiers (or access specifiers) are keywords in object-oriented languages that set the accessibility of classes, methods, and other members.&lt;/p&gt;
+&lt;p&gt;Access modifiers are a specific part of programming language syntax used to facilitate the encapsulation of components.&lt;/p&gt;
+&lt;p&gt;typescript中有三种：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;public //默认值&lt;/li&gt;
+&lt;li&gt;private&lt;/li&gt;
+&lt;li&gt;protected&lt;/li&gt;
+&lt;/ul&gt;
+做如下改动：
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;private x: number;
+private y: number;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;则此时只能访问&lt;code&gt;point.draw()&lt;/code&gt;，x和y不能访问&lt;/p&gt;
+&lt;p&gt;typescript支持更简单的书写方式，上述代码可简化如下：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;class Point {
+    constructor(private x?: number, private y?: number){
+
+    }
+
+    draw(){
+    console.log(&amp;#39;X: &amp;#39; + this.x + &amp;#39;, Y: &amp;#39; + this.y);
+    }
+}
+
+let point = new Point(1, 2);
+point.draw();&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;那需要访问x，y的时候怎么办呢？&lt;/p&gt;
+&lt;p&gt;可以添加如下method：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;getX() {
+    return this.x;
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;然后调用&lt;code&gt;point.getX()&lt;/code&gt;获取x的值。&lt;/p&gt;
+&lt;p&gt;那需要重新设置x，y的值的时候怎么办呢？&lt;/p&gt;
+&lt;p&gt;可以添加如下方法：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;setX(value){
+    if (value &amp;lt; 0)
+    throw new Error(&amp;#39;value cannot be less than 0.&amp;#39;);
+    this.x = value;
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;可以在此方法中设置一些逻辑，比如过滤不合法值。&lt;/p&gt;
+&lt;p&gt;property&lt;/p&gt;
+&lt;p&gt;将上述代码的形式做进一步转变：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;class Point {
+    constructor (private x?:number, private y?: number){
+
+    }
+
+    //getter
+    get X(){
+    return this.x;
+    }
+
+    //setter
+    set X(){
+    if (value &amp;lt; 0)
+        throw new Error(&amp;#39;value cannot be less than 0.&amp;#39;)
+    this.x = value;
+    }
+
+    draw(){
+    console.log(&amp;#39;X: &amp;#39; + this.x + &amp;#39;, Y: &amp;#39; + this.y);
+    }
+}
+
+//实例化
+let point = new Point(1, 2);
+//read
+let x = point.X;
+console.log(&amp;#39;X: &amp;#39; + x);
+//set
+point.X = 7;
+point.draw();&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;此时X即为protperty。虽然其实质是method，但很像Field&lt;/p&gt;
+&lt;p&gt;运行代码出现错误提示：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;    error TS1056: Accessors are only available when targeting ECMAScript 5 and higher.&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;运行&lt;code&gt;tsc —target ES2016 main.ts&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;命名规范一般采用第一个单词之后的每个单词首字母大写&lt;/p&gt;
+&lt;p&gt;将大写X改为小写x，将构造器中的x前面加上一个下划线_&lt;/p&gt;
+&lt;p&gt;最终版如下：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;//定义
+class Point {
+    constructor (private _x?:number, private _y?: number){
+
+    }
+
+    get x(){
+    return this._x;
+    }
+
+    set x(value){
+    if (value &amp;lt; 0)
+        throw new Error(&amp;#39;value cannot be less than 0.&amp;#39;)
+    this._x = value;
+    }
+
+    draw(){
+    console.log(&amp;#39;X: &amp;#39; + this._x + &amp;#39;, Y: &amp;#39; + this._y);
+    }
+}
+
+//实例化
+let point = new Point(1, 2);
+//read
+let x = point.x;
+console.log(&amp;#39;X: &amp;#39; + x);
+//set
+point.x = 7;
+point.draw();&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Fields should (almost always) be kept private to a class and accessed via get and set properties.&lt;/p&gt;
+&lt;p&gt;Properties provide a level of abstraction allowing you to change the fields while not affecting the external way they are accessed by the things that use your class.&lt;/p&gt;
+&lt;p&gt;module&lt;/p&gt;
+&lt;p&gt;将之前创建的class的定义剪切至新文件./point.ts，在class前添加&lt;code&gt;export&lt;/code&gt;导出。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;export class Point {
+
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;在./mian.ts中导入Point类然后再进行调用&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;import { Point } from ‘./point’&lt;/code&gt;
+这里的module是typescript中的module，和angular中的module不是一个意思。&lt;/p&gt;
+&lt;p&gt;此时在命令行调用会出错，我还不知为什么&lt;/p&gt;</content:encoded></item></channel></rss>
